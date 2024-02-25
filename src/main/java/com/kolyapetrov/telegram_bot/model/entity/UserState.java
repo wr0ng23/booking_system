@@ -1,7 +1,7 @@
 package com.kolyapetrov.telegram_bot.model.entity;
 
 public enum UserState {
-    REGISTRATION,
-    REQUEST_LOCATION,
-    MAIN_MENU
+    MAIN,
+    ENTER_PHOTOS,
+    ENTER_DESCRIPTION_OF_AD
 }

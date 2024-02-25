@@ -3,6 +3,8 @@ package com.kolyapetrov.telegram_bot.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -19,16 +21,10 @@ public class AppUser {
     private String nameOfUser;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type_of_user")
-    private UserType userType;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "state_of_user")
     private UserState userState;
 
-    @Column(name = "latitude")
-    private Double latitude;
-
-    @Column(name = "longitude")
-    private Double longitude;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_of_user")
+    private List<Order> orders;
 }

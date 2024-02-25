@@ -7,35 +7,32 @@ import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.Command;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-public class StartCommand implements CommandHandler {
+public class CreateNewAdCommand implements CommandHandler {
     private final UserService userService;
 
-    private static final String DESCRIPTION = "Здесь вы можете сдать в аренду или забронировать жилье!";
-
-    @Autowired
-    public StartCommand(UserService userService) {
+    public CreateNewAdCommand(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     public void handle(Update update, DefaultAbsSender sender) throws TelegramApiException {
-        String chatId = update.getMessage().getChatId().toString();
         AppUser appUser = userService.getUser(update.getMessage().getFrom());
-        appUser.setUserState(UserState.MAIN);
-        userService.saveUser(appUser);
+        String chatId = update.getMessage().getChatId().toString();
 
-        sender.execute(MessageUtil.getMessage(chatId, DESCRIPTION, KeyBoardUtil.mainKeyBoard()));
+        sender.execute(MessageUtil.getMessage(chatId, "Для создания объявления отправьте фотографии " +
+                "вашего жилья. Когда отправите нужное количество - нажмите кнопку снизу.", KeyBoardUtil.finishPhotoSending()));
+        appUser.setUserState(UserState.ENTER_PHOTOS);
+        userService.saveUser(appUser);
     }
 
     @Override
     public Command getCommand() {
-        return Command.START;
+        return Command.CREATE_NEW_ADVERTISEMENT;
     }
 }

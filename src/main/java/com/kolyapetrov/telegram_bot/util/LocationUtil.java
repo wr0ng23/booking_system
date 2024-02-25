@@ -6,7 +6,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class LocationUtil {
-    private double distBetweenPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
+    private LocationUtil() {
+
+    }
+
+    public static double distBetweenPoints(double latitudeA, double longitudeA,
+                                           double latitudeB, double longitudeB) {
         final int EARTH_RADIUS = 6372795;
         double lat1 = latitudeA * Math.PI / 180;
         double lat2 = latitudeB * Math.PI / 180;
@@ -30,7 +35,7 @@ public class LocationUtil {
         return ad * EARTH_RADIUS;
     }
 
-    private void requestInfoAboutLocationByCords(Double latitude, Double longitude) {
+    public static void requestInfoAboutLocationByCords(Double latitude, Double longitude) {
         String apiUrl = "http://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address";
         String token = "2c7577e9645ac0d3aaa0b5d0e6b97f5aa113de28";
 

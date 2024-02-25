@@ -1,13 +1,15 @@
 package com.kolyapetrov.telegram_bot.model.service;
 
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
+import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.entity.UserState;
 import com.kolyapetrov.telegram_bot.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import static com.kolyapetrov.telegram_bot.model.entity.UserState.REGISTRATION;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,10 +35,30 @@ public class UserServiceImpl implements UserService {
             AppUser transientUser = AppUser.builder()
                     .userId(telegramUser.getId())
                     .nameOfUser(telegramUser.getUserName())
-                    .userState(REGISTRATION)
+                    .userState(UserState.MAIN)
                     .build();
             return userRepository.save(transientUser);
         }
         return appUser;
+    }
+
+    @Override
+    public List<Order> getOrders(Long id) {
+        AppUser appUser = userRepository.findById(id).orElse(null);
+        if (appUser == null) {
+            return null;
+        } else {
+            return appUser.getOrders();
+        }
+    }
+
+    @Override
+    public Order getOrderByNumberOfOrder(Long idOfUser, Long numberOfOrder) {
+        List<Order> orders = this.getOrders(idOfUser);
+        if (orders == null) return null;
+        return orders.stream()
+                .filter(order -> Objects.equals(order.getNumberOfOrder(), numberOfOrder))
+                .findFirst()
+                .orElse(null);
     }
 }

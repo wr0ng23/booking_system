@@ -2,28 +2,37 @@ package com.kolyapetrov.telegram_bot;
 
 import com.kolyapetrov.telegram_bot.config.BotConfig;
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
-import com.kolyapetrov.telegram_bot.controller.MessageHandler;
+import com.kolyapetrov.telegram_bot.controller.ActionHandler;
+import com.kolyapetrov.telegram_bot.controller.actions.ActionsHandlerContainer;
+import com.kolyapetrov.telegram_bot.controller.commands.*;
+import com.kolyapetrov.telegram_bot.model.entity.AppUser;
+import com.kolyapetrov.telegram_bot.model.entity.UserState;
+import com.kolyapetrov.telegram_bot.model.service.UserService;
+import com.kolyapetrov.telegram_bot.util.Command;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 @Component
 public class BookingBot extends TelegramLongPollingBot {
-    public static String COMMAND_PREFIX = "/";
     private final BotConfig botConfig;
-    private final MessageHandler messageHandler;
-    private final CommandHandler commandHandler;
+    private final CommandsHandlerContainer commandsHandlerContainer;
+    private final ActionsHandlerContainer actionsHandlerContainer;
+    private final UserService userService;
 
     @Autowired
-    public BookingBot(BotConfig botConfig, MessageHandler messageHandler,
-                      CommandHandler commandHandler) {
+    public BookingBot(BotConfig botConfig, CommandsHandlerContainer CommandsHandlerContainer,
+                      ActionsHandlerContainer actionsHandlerContainer, UserService userService) {
         super(botConfig.getToken());
         this.botConfig = botConfig;
-        this.messageHandler = messageHandler;
-        this.commandHandler = commandHandler;
+        this.commandsHandlerContainer = CommandsHandlerContainer;
+        this.actionsHandlerContainer = actionsHandlerContainer;
+        this.userService = userService;
     }
 
     @Override
@@ -33,30 +42,47 @@ public class BookingBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            String message = update.getMessage().getText();
-
-            if (message.startsWith(COMMAND_PREFIX)) {
-                String commandIdentifier = message.split(" ")[0].toLowerCase();
-                SendMessage commandMessage = commandHandler.retrieveCommand(commandIdentifier)
-                        .retrieveMessage(update);
-                sendMessage(commandMessage);
-            } else {
-                SendMessage replyMessage = messageHandler.handleMessage(update);
-                sendMessage(replyMessage);
-            }
-
-        } else if (update.getMessage().hasLocation()) {
-            SendMessage replyMessage = messageHandler.handleMessage(update);
-            sendMessage(replyMessage);
+        try {
+            handle(update);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void sendMessage(SendMessage sendMessage) {
-        try {
-            this.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+    private void handle(Update update) throws TelegramApiException {
+        if (handleCommand(update)) return;
+        handleAction(update);
+    }
+
+    private boolean handleCommand(Update update) throws TelegramApiException {
+        if (!(update.hasMessage() && update.getMessage().hasText())) return false;
+
+        String commandAlias = update.getMessage().getText();
+        Optional<Command> commandOptional = Arrays.stream(Command.values())
+                .filter(c -> c.getCommand().equals(commandAlias))
+                .findFirst();
+
+        Command command;
+        if (commandOptional.isEmpty()) {
+            return false;
+        } else {
+            command = commandOptional.get();
+        }
+
+        CommandHandler commandHandler = commandsHandlerContainer.retrieveCommand(command);
+        if (commandHandler != null) {
+            commandHandler.handle(update, this);
+            return true;
+
+        } else return false;
+    }
+
+    private void handleAction(Update update) throws TelegramApiException {
+        AppUser appUser = userService.getUser(update.getMessage().getFrom());
+        UserState userState = appUser.getUserState();
+        ActionHandler actionHandler = actionsHandlerContainer.retrieveAction(userState);
+        if (actionHandler != null) {
+            actionHandler.handle(update, this);
         }
     }
 }
