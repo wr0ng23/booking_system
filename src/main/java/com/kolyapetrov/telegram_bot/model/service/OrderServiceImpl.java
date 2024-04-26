@@ -23,4 +23,9 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrder(Long id) {
         return null;
     }
+
+    @Override
+    public void deleteOrder(Order order) {
+        orderRepository.delete(order);
+    }
 }

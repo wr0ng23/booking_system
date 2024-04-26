@@ -4,6 +4,7 @@ import com.kolyapetrov.telegram_bot.config.BotConfig;
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.controller.actions.ActionsHandlerContainer;
+import com.kolyapetrov.telegram_bot.controller.actions.CallbackQueriesHandler;
 import com.kolyapetrov.telegram_bot.controller.commands.*;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.UserState;
@@ -24,15 +25,18 @@ public class BookingBot extends TelegramLongPollingBot {
     private final CommandsHandlerContainer commandsHandlerContainer;
     private final ActionsHandlerContainer actionsHandlerContainer;
     private final UserService userService;
+    private final CallbackQueriesHandler callbackQueriesHandler;
 
     @Autowired
     public BookingBot(BotConfig botConfig, CommandsHandlerContainer CommandsHandlerContainer,
-                      ActionsHandlerContainer actionsHandlerContainer, UserService userService) {
+                      ActionsHandlerContainer actionsHandlerContainer, UserService userService,
+                      CallbackQueriesHandler callbackQueriesHandler) {
         super(botConfig.getToken());
         this.botConfig = botConfig;
         this.commandsHandlerContainer = CommandsHandlerContainer;
         this.actionsHandlerContainer = actionsHandlerContainer;
         this.userService = userService;
+        this.callbackQueriesHandler = callbackQueriesHandler;
     }
 
     @Override
@@ -50,6 +54,10 @@ public class BookingBot extends TelegramLongPollingBot {
     }
 
     private void handle(Update update) throws TelegramApiException {
+        if (update.hasCallbackQuery()) {
+            handleCallBackQuery(update);
+            return;
+        }
         if (handleCommand(update)) return;
         handleAction(update);
     }
@@ -84,5 +92,9 @@ public class BookingBot extends TelegramLongPollingBot {
         if (actionHandler != null) {
             actionHandler.handle(update, this);
         }
+    }
+
+    private void handleCallBackQuery(Update update) throws TelegramApiException {
+        callbackQueriesHandler.handle(update, this);
     }
 }

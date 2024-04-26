@@ -1,6 +1,5 @@
 package com.kolyapetrov.telegram_bot.util;
 
-import com.kolyapetrov.telegram_bot.util.ConstantMessages;
 import lombok.Getter;
 
 @Getter

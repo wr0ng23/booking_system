@@ -11,11 +11,9 @@ import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -36,23 +34,13 @@ public class SeeAdsCommand implements CommandHandler {
         AppUser appUser = userService.getUser(update.getMessage().getFrom());
         String chatId = update.getMessage().getChatId().toString();
 
-        List<Order> orders = appUser.getOrders();
-        for (var order : orders) {
-            String description = order.getDescription();
-            List<PhotoOfOrder> photosOfOrder = order.getPhotos();
-            sender.execute(MessageUtil.getMessage(chatId, "<strong>Это ваше " + order.getNumberOfOrder()
-                    + " объявление:</strong>"));
-
-            if (order.getPhotos().size() == 1) {
-                String idOfPhoto = order.getPhotos().get(0).getId();
-                sender.execute(MessageUtil.getMessage(chatId, description, idOfPhoto));
-            } else {
-                List<InputMedia> inputMediaPhotos = new ArrayList<>();
-                photosOfOrder.forEach(photo -> inputMediaPhotos.add(new InputMediaPhoto(photo.getId())));
-                sender.execute(MessageUtil.getMessage(chatId, description, inputMediaPhotos));
-            }
-        }
-        sender.execute(MessageUtil.getMessage(chatId, "<strong>Количество созданных объявлений: "
-                        + orders.size() + ".</strong>", KeyBoardUtil.mainKeyBoard()));
+        List<Order> orders = appUser.getOrders().stream().sorted(Comparator.comparing(Order::getNumberOfOrder)).toList();
+        var firstOrder = orders.get(0);
+        String description = firstOrder.getDescription();
+        List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
+        String mainPhotoId = photosOfOrder.get(0).getId();
+        sender.execute(MessageUtil.getMessage(chatId, description, mainPhotoId,
+                KeyBoardUtil.seeADsKeyboard(orders.get(orders.size() - 1).getNumberOfOrder().toString(), firstOrder.getNumberOfOrder().toString(),
+                        orders.get(1).getNumberOfOrder().toString())));
     }
 }

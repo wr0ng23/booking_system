@@ -12,7 +12,8 @@ import java.util.List;
 @Entity
 @Builder
 @Table(name = "orders")
-public class Order {
+public class
+Order {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +28,7 @@ public class Order {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_of_order")
     private List<PhotoOfOrder> photos;
+
+    @Column(name = "is_editing")
+    private Boolean isEditing;
 }

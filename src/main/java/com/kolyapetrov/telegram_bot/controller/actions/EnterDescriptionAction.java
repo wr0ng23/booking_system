@@ -2,6 +2,7 @@ package com.kolyapetrov.telegram_bot.controller.actions;
 
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
+import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.entity.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
@@ -29,13 +30,19 @@ public class EnterDescriptionAction implements ActionHandler {
         //TODO: add validation of description for new Ad
         if (update.getMessage().hasText()) {
             String description = update.getMessage().getText();
-            appUser.getOrders().get(appUser.getOrders().size() - 1).setDescription(description);
+            var newOrder = appUser.getOrders().stream().filter(Order::getIsEditing).findFirst();
+            if (newOrder.isEmpty()) {
+                appUser.getOrders().get(appUser.getOrders().size() - 1).setDescription(description);
+                sender.execute(MessageUtil.getMessage(chatId, "Объявление успешно создано!", KeyBoardUtil.mainKeyBoard()));
+            } else {
+                newOrder.get().setDescription(description);
+                newOrder.get().setIsEditing(false);
+                sender.execute(MessageUtil.getMessage(chatId, "Описание успешно обновлено!", KeyBoardUtil.mainKeyBoard()));
+            }
             appUser.setUserState(UserState.MAIN);
             userService.saveUser(appUser);
-
-            sender.execute(MessageUtil.getMessage(chatId, "Объявление успешно создано!", KeyBoardUtil.mainKeyBoard()));
         } else {
-            sender.execute(MessageUtil.getMessage(chatId, "Введите описание для создаваемого объявления"));
+            sender.execute(MessageUtil.getMessage(chatId, "Введите описание для объявления текстом!"));
         }
     }
 

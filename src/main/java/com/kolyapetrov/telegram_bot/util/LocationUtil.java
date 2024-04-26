@@ -18,7 +18,6 @@ public class LocationUtil {
         double long1 = longitudeA * Math.PI / 180;
         double long2 = longitudeB * Math.PI / 180;
 
-        // косинусы и синусы широт и разницы долгот
         double cl1 = Math.cos(lat1);
         double cl2 = Math.cos(lat2);
         double sl1 = Math.sin(lat1);
@@ -27,7 +26,6 @@ public class LocationUtil {
         double cdelta = Math.cos(delta);
         double sdelta = Math.sin(delta);
 
-        // вычисления длины большого круга
         double y = Math.sqrt(Math.pow(cl2 * sdelta, 2) + Math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2));
         double x = sl1 * sl2 + cl1 * cl2 * cdelta;
 
@@ -47,7 +45,6 @@ public class LocationUtil {
         // Creating the HTTP client
         HttpClient httpClient = HttpClient.newHttpClient();
 
-        // Creating the HTTP request
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
                 .header("Content-Type", "application/json")
@@ -57,10 +54,8 @@ public class LocationUtil {
                 .build();
 
         try {
-            // Sending the HTTP request and receiving the response
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Displaying the response status code and body
             System.out.println("Response Code: " + response.statusCode());
             System.out.println("Response body: " + response.body());
 

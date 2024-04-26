@@ -18,11 +18,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 
 @Component
-public class DownloadPhotosAction implements ActionHandler {
+public class EnterPhotosAction implements ActionHandler {
     private final UserService userService;
 
     @Autowired
-    public DownloadPhotosAction(UserService userService) {
+    public EnterPhotosAction(UserService userService) {
         this.userService = userService;
     }
 
@@ -68,6 +68,7 @@ public class DownloadPhotosAction implements ActionHandler {
             lastOrder = new Order();
             lastOrder.setNumberOfOrder(sizeOfOrders + 1);
             lastOrder.setPhotos(new ArrayList<>());
+            lastOrder.setIsEditing(false);
         }
 
         // checking if order was already created
@@ -75,6 +76,7 @@ public class DownloadPhotosAction implements ActionHandler {
             lastOrder = new Order();
             lastOrder.setNumberOfOrder(sizeOfOrders + 1);
             lastOrder.setPhotos(new ArrayList<>());
+            lastOrder.setIsEditing(false);
         }
         return lastOrder;
     }
