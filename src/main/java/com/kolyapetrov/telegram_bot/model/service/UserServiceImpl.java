@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
+    /*@Override
     public Order getOrderByNumberOfOrder(Long idOfUser, Long numberOfOrder) {
         List<Order> orders = this.getOrders(idOfUser);
         if (orders == null) return null;
@@ -60,5 +60,5 @@ public class UserServiceImpl implements UserService {
                 .filter(order -> Objects.equals(order.getNumberOfOrder(), numberOfOrder))
                 .findFirst()
                 .orElse(null);
-    }
+    }*/
 }

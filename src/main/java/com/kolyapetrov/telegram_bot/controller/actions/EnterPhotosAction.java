@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 @Component
 public class EnterPhotosAction implements ActionHandler {
@@ -61,12 +62,16 @@ public class EnterPhotosAction implements ActionHandler {
     private Order getLastOrder(AppUser appUser) {
         long sizeOfOrders = appUser.getOrders().size();
         Order lastOrder;
+
         // Getting last order if it exists or creating a new order
         if (sizeOfOrders != 0) {
-            lastOrder = appUser.getOrders().get((int) (sizeOfOrders - 1));
+            var orders = appUser.getOrders()
+                    .stream()
+                    .sorted(Comparator.comparing(Order::getId))
+                    .toList();
+            lastOrder = orders.get((int) (sizeOfOrders - 1));
         } else {
             lastOrder = new Order();
-            lastOrder.setNumberOfOrder(sizeOfOrders + 1);
             lastOrder.setPhotos(new ArrayList<>());
             lastOrder.setIsEditing(false);
         }
@@ -74,7 +79,6 @@ public class EnterPhotosAction implements ActionHandler {
         // checking if order was already created
         if (lastOrder.getDescription() != null) {
             lastOrder = new Order();
-            lastOrder.setNumberOfOrder(sizeOfOrders + 1);
             lastOrder.setPhotos(new ArrayList<>());
             lastOrder.setIsEditing(false);
         }

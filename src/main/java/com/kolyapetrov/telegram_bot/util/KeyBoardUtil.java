@@ -55,7 +55,7 @@ public class KeyBoardUtil {
         return keyboardMarkup;
     }
 
-    public static InlineKeyboardMarkup seeADsKeyboard(String idOfLeftOrder, String idOfCurrentOrder, String idOfRightOrder) {
+    public static InlineKeyboardMarkup seeADsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder) {
         InlineKeyboardButton leftOrderButton = getButton(LEFT_AD, idOfLeftOrder);
         InlineKeyboardButton rightOrderButton = getButton(RIGHT_AD, idOfRightOrder);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
@@ -77,7 +77,7 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    private static InlineKeyboardButton getButton(String nameOfButton, String idOfCurrentOrder) {
+    private static InlineKeyboardButton getButton(String nameOfButton, Long idOfCurrentOrder) {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(nameOfButton);
         button.setCallbackData(nameOfButton + " " + idOfCurrentOrder);

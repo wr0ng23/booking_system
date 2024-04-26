@@ -34,13 +34,13 @@ public class SeeAdsCommand implements CommandHandler {
         AppUser appUser = userService.getUser(update.getMessage().getFrom());
         String chatId = update.getMessage().getChatId().toString();
 
-        List<Order> orders = appUser.getOrders().stream().sorted(Comparator.comparing(Order::getNumberOfOrder)).toList();
+        List<Order> orders = appUser.getOrders().stream().sorted(Comparator.comparing(Order::getId)).toList();
         var firstOrder = orders.get(0);
         String description = firstOrder.getDescription();
         List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
         String mainPhotoId = photosOfOrder.get(0).getId();
         sender.execute(MessageUtil.getMessage(chatId, description, mainPhotoId,
-                KeyBoardUtil.seeADsKeyboard(orders.get(orders.size() - 1).getNumberOfOrder().toString(), firstOrder.getNumberOfOrder().toString(),
-                        orders.get(1).getNumberOfOrder().toString())));
+                KeyBoardUtil.seeADsKeyboard(orders.get(orders.size() - 1).getId(), firstOrder.getId(),
+                        orders.get(1).getId())));
     }
 }

@@ -10,5 +10,5 @@ public interface UserService {
     void saveUser(AppUser appUser);
     AppUser getUser(User telegramUser);
     List<Order> getOrders(Long id);
-    Order getOrderByNumberOfOrder(Long idOfUser, Long numberOfOrder);
+//    Order getOrderByNumberOfOrder(Long idOfUser, Long numberOfOrder);
 }

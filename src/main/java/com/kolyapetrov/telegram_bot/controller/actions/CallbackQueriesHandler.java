@@ -3,6 +3,7 @@ package com.kolyapetrov.telegram_bot.controller.actions;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
+import com.kolyapetrov.telegram_bot.model.entity.UserState;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
@@ -47,7 +48,18 @@ public class CallbackQueriesHandler {
             getOrderPhotosQuery(userInfo, sender);
         } else if (dataFromCallBackQuery.startsWith(DELETE_AD)) {
             deleteOrderQuery(userInfo, sender);
+        } else if (dataFromCallBackQuery.startsWith(EDIT_AD)) {
+            editOrderQuery(userInfo, sender);
         }
+    }
+
+    private void editOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
+        userInfo.getAppUser().setUserState(UserState.EDIT_AD);
+        var orders = getUserOrders(userInfo.getAppUser());
+        var order = orders.get(getIndexOfOrder(orders, userInfo.getNumberOfOrder()));
+        order.setIsEditing(true);
+        userService.saveUser(userInfo.getAppUser());
+        sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Введите новое описание для объявления: "));
     }
 
     private void deleteOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
@@ -56,7 +68,7 @@ public class CallbackQueriesHandler {
         orderService.deleteOrder(orders.get(index));
 
         int[] indexes = getIndexesOfNeighboringOrders(index, orders.size());
-        userInfo.setNumberOfOrder(orders.get(indexes[1]).getNumberOfOrder());
+        userInfo.setNumberOfOrder(orders.get(indexes[1]).getId());
         getNextOrderQuery(userInfo, sender);
     }
 
@@ -93,8 +105,8 @@ public class CallbackQueriesHandler {
         Order leftNewOrder = userOrders.get(indexes[0]);
         Order rightNewOrder = userOrders.get(indexes[1]);
 
-        InlineKeyboardMarkup keyboard = KeyBoardUtil.seeADsKeyboard(leftNewOrder.getNumberOfOrder().toString(),
-                newCurrentOrder.getNumberOfOrder().toString(), rightNewOrder.getNumberOfOrder().toString());
+        InlineKeyboardMarkup keyboard = KeyBoardUtil.seeADsKeyboard(leftNewOrder.getId(),
+                newCurrentOrder.getId(), rightNewOrder.getId());
 
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                 newMainPhotoId, description, keyboard));
@@ -104,14 +116,14 @@ public class CallbackQueriesHandler {
     private List<Order> getUserOrders(AppUser appUser) {
         return appUser.getOrders()
                 .stream()
-                .sorted(Comparator.comparing(Order::getNumberOfOrder))
+                .sorted(Comparator.comparing(Order::getId))
                 .toList();
     }
 
     private int getIndexOfOrder(List<Order> orders, Long numberOfOrder) {
         for (int i = 0; i < orders.size(); ++i) {
             Order order = orders.get(i);
-            if (order.getNumberOfOrder().equals(numberOfOrder)) {
+            if (order.getId().equals(numberOfOrder)) {
                 return i;
             }
         }

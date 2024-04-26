@@ -4,5 +4,5 @@ public enum UserState {
     MAIN,
     ENTER_PHOTOS,
     ENTER_DESCRIPTION_OF_AD,
-    EDIT_ADS
+    EDIT_AD
 }

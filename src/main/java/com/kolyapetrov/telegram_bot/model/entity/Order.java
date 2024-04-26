@@ -19,8 +19,8 @@ Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "number_of_order")
-    private Long numberOfOrder;
+/*    @Column(name = "number_of_order")
+    private Long numberOfOrder;*/
 
     @Column(name = "description")
     private String description;

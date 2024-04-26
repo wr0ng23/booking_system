@@ -13,15 +13,18 @@ import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.Comparator;
-
 @Component
-public class EnterDescriptionAction implements ActionHandler {
+public class EditAdAction implements ActionHandler {
     private final UserService userService;
 
     @Autowired
-    public EnterDescriptionAction(UserService userService) {
+    public EditAdAction(UserService userService) {
         this.userService = userService;
+    }
+
+    @Override
+    public UserState getState() {
+        return UserState.EDIT_AD;
     }
 
     @Override
@@ -29,27 +32,16 @@ public class EnterDescriptionAction implements ActionHandler {
         String chatId = update.getMessage().getChatId().toString();
         AppUser appUser = userService.getUser(update.getMessage().getFrom());
 
-        //TODO: add validation of description for new Ad
         if (update.getMessage().hasText()) {
             String description = update.getMessage().getText();
-            var orders = appUser.getOrders()
-                    .stream()
-                    .sorted(Comparator.comparing(Order::getId))
-                    .toList();
-
-            var order = orders.get(orders.size() - 1);
-            order.setDescription(description);
-            order.setIsEditing(false);
-            sender.execute(MessageUtil.getMessage(chatId, "Объявление успешно создано!", KeyBoardUtil.mainKeyBoard()));
+            var orderForEdit = appUser.getOrders().stream().filter(Order::getIsEditing).findFirst().get();
+            orderForEdit.setDescription(description);
+            orderForEdit.setIsEditing(false);
+            sender.execute(MessageUtil.getMessage(chatId, "Описание успешно обновлено!", KeyBoardUtil.mainKeyBoard()));
             appUser.setUserState(UserState.MAIN);
             userService.saveUser(appUser);
         } else {
-            sender.execute(MessageUtil.getMessage(chatId, "Введите описание для объявления текстом!"));
+            sender.execute(MessageUtil.getMessage(chatId, "Введите новое описание для объявления текстом!"));
         }
-    }
-
-    @Override
-    public UserState getState() {
-        return UserState.ENTER_DESCRIPTION_OF_AD;
     }
 }
