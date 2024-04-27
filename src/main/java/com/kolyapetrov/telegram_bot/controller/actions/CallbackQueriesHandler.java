@@ -63,7 +63,7 @@ public class CallbackQueriesHandler {
     }
 
     private void deleteOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
-        List<Order> orders = userInfo.getAppUser().getOrders();
+        List<Order> orders = getUserOrders(userInfo.getAppUser());
         int index = getIndexOfOrder(orders, userInfo.getNumberOfOrder());
         orderService.deleteOrder(orders.get(index));
 
@@ -78,10 +78,13 @@ public class CallbackQueriesHandler {
         Order newCurrentOrder = userOrders.get(indexOfCurrentOrder);
 
         var photos = newCurrentOrder.getPhotos();
-        List<InputMedia> listPhotos = new ArrayList<>();
-        photos.forEach(photo -> listPhotos.add(new InputMediaPhoto(photo.getId())));
-        sender.execute(MessageUtil.getMessage(userInfo.getChatId(), listPhotos, userInfo.getMessageId()));
-
+        if (photos.size() == 1) {
+            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), photos.get(0).getId(), userInfo.getMessageId()));
+        } else {
+            List<InputMedia> listPhotos = new ArrayList<>();
+            photos.forEach(photo -> listPhotos.add(new InputMediaPhoto(photo.getId())));
+            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), listPhotos, userInfo.getMessageId()));
+        }
         /*DeleteMessage deleteMessage = new DeleteMessage(chatId, messageId);
         sender.execute(deleteMessage);*/
 
@@ -107,9 +110,9 @@ public class CallbackQueriesHandler {
 
         InlineKeyboardMarkup keyboard = KeyBoardUtil.seeADsKeyboard(leftNewOrder.getId(),
                 newCurrentOrder.getId(), rightNewOrder.getId());
-
+        String price = "\n<b>Цена: </b>" + newCurrentOrder.getPrice();
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                newMainPhotoId, description, keyboard));
+                newMainPhotoId, description + price, keyboard));
 
     }
 

@@ -19,9 +19,6 @@ Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-/*    @Column(name = "number_of_order")
-    private Long numberOfOrder;*/
-
     @Column(name = "description")
     private String description;
 
@@ -31,4 +28,13 @@ Order {
 
     @Column(name = "is_editing")
     private Boolean isEditing;
+
+    @Column(name = "price")
+    private Double price;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "address")
+    private String address;
 }

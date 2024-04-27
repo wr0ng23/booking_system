@@ -6,12 +6,15 @@ import com.kolyapetrov.telegram_bot.model.entity.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.Command;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
+import com.kolyapetrov.telegram_bot.util.LocationUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.io.IOException;
 
 @Component
 public class StartCommand implements CommandHandler {
@@ -32,6 +35,11 @@ public class StartCommand implements CommandHandler {
         userService.saveUser(appUser);
 
         sender.execute(MessageUtil.getMessage(chatId, DESCRIPTION, KeyBoardUtil.mainKeyBoard()));
+        try {
+            LocationUtil.getCordByAddress(null);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -1,9 +1,15 @@
 package com.kolyapetrov.telegram_bot.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 public class LocationUtil {
     private LocationUtil() {
@@ -61,6 +67,42 @@ public class LocationUtil {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void getCordByAddress(String address) throws IOException, InterruptedException {
+//        String query = "Москва, ул. Садовническая, 25";
+        String apiKey = "9f8614fb-f5b7-43c1-ad53-de8b831727d4";
+        String encodedQuery = URLEncoder.encode(address, StandardCharsets.UTF_8);
+        String url = "https://catalog.api.2gis.com/3.0/items/geocode?q=" + encodedQuery +
+                "&fields=items.point,items.geometry.centroid&key=" + apiKey;
+
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() == 200) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(response.body());
+
+            JsonNode itemsNode = rootNode.path("result").path("items");
+            if (itemsNode.isArray() && !itemsNode.isEmpty()) {
+                JsonNode item = itemsNode.get(0);
+                JsonNode point = item.path("point");
+                double lat = point.get("lat").asDouble();
+                double lon = point.get("lon").asDouble();
+
+                System.out.println("Широта: " + lat);
+                System.out.println("Долгота: " + lon);
+            } else {
+                System.out.println("Нет данных о координатах для данного запроса.");
+            }
+        } else {
+            System.out.println("Ошибка при выполнении запроса: " + response.statusCode());
         }
     }
 }

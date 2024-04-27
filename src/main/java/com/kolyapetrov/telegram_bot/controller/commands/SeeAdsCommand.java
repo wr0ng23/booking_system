@@ -39,7 +39,8 @@ public class SeeAdsCommand implements CommandHandler {
         String description = firstOrder.getDescription();
         List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
         String mainPhotoId = photosOfOrder.get(0).getId();
-        sender.execute(MessageUtil.getMessage(chatId, description, mainPhotoId,
+        String price = "\n<b>Цена: </b>" + firstOrder.getPrice();
+        sender.execute(MessageUtil.getMessage(chatId, description + price, mainPhotoId,
                 KeyBoardUtil.seeADsKeyboard(orders.get(orders.size() - 1).getId(), firstOrder.getId(),
                         orders.get(1).getId())));
     }

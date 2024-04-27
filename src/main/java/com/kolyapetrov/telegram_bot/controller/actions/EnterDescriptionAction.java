@@ -39,9 +39,8 @@ public class EnterDescriptionAction implements ActionHandler {
 
             var order = orders.get(orders.size() - 1);
             order.setDescription(description);
-            order.setIsEditing(false);
-            sender.execute(MessageUtil.getMessage(chatId, "Объявление успешно создано!", KeyBoardUtil.mainKeyBoard()));
-            appUser.setUserState(UserState.MAIN);
+            sender.execute(MessageUtil.getMessage(chatId, "Теперь введите город для вашего объявления: "));
+            appUser.setUserState(UserState.ENTER_ADDRESS);
             userService.saveUser(appUser);
         } else {
             sender.execute(MessageUtil.getMessage(chatId, "Введите описание для объявления текстом!"));

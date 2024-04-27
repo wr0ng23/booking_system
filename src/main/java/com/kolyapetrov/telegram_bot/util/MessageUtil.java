@@ -46,6 +46,7 @@ public class MessageUtil {
         SendPhoto newSendPhoto = new SendPhoto();
         newSendPhoto.setChatId(chatId);
         newSendPhoto.setCaption(description);
+        newSendPhoto.setParseMode("html");
         InputFile inputFile = new InputFile();
         inputFile.setMedia(photoId);
         newSendPhoto.setPhoto(inputFile);
@@ -100,6 +101,7 @@ public class MessageUtil {
         sendMessage.setChatId(chatId);
         sendMessage.setMessageId(messageId);
         InputMediaPhoto photo = new InputMediaPhoto(photoId);
+        photo.setParseMode("html");
         photo.setCaption(description);
         sendMessage.setMedia(photo);
         sendMessage.setReplyMarkup(keyboard);
@@ -127,5 +129,13 @@ public class MessageUtil {
         sendMediaGroup.setChatId(chatId);
         sendMediaGroup.setReplyToMessageId(replyMessageId);
         return sendMediaGroup;
+    }
+
+    public static SendPhoto getMessage(String chatId, String photoId, Integer replyMessageId) {
+        SendPhoto sendPhoto = new SendPhoto();
+        sendPhoto.setPhoto(new InputFile(photoId));
+        sendPhoto.setReplyToMessageId(replyMessageId);
+        sendPhoto.setChatId(chatId);
+        return sendPhoto;
     }
 }
