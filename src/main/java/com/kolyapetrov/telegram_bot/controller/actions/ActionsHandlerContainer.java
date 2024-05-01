@@ -1,7 +1,7 @@
 package com.kolyapetrov.telegram_bot.controller.actions;
 
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
-import com.kolyapetrov.telegram_bot.model.entity.UserState;
+import com.kolyapetrov.telegram_bot.util.UserState;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

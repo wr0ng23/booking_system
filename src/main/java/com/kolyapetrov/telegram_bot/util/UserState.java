@@ -1,4 +1,4 @@
-package com.kolyapetrov.telegram_bot.model.entity;
+package com.kolyapetrov.telegram_bot.util;
 
 public enum UserState {
     MAIN,
@@ -6,5 +6,6 @@ public enum UserState {
     ENTER_DESCRIPTION_OF_AD,
     ENTER_PRICE,
     ENTER_ADDRESS,
-    EDIT_AD
+    EDIT_AD,
+    SEARCH_FOR_ADS
 }

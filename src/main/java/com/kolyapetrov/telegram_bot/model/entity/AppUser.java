@@ -1,5 +1,6 @@
 package com.kolyapetrov.telegram_bot.model.entity;
 
+import com.kolyapetrov.telegram_bot.util.UserState;
 import jakarta.persistence.*;
 import lombok.*;
 

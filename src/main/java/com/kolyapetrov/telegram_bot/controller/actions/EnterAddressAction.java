@@ -3,9 +3,9 @@ package com.kolyapetrov.telegram_bot.controller.actions;
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
-import com.kolyapetrov.telegram_bot.model.entity.UserState;
+import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.model.service.LocationService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.LocationUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,14 +15,18 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 @Component
 public class EnterAddressAction implements ActionHandler {
     private final UserService userService;
+    private final LocationService locationService;
 
     @Autowired
-    public EnterAddressAction(UserService userService) {
+    public EnterAddressAction(UserService userService, LocationService locationService) {
         this.userService = userService;
+        this.locationService = locationService;
     }
 
     @Override
@@ -45,7 +49,8 @@ public class EnterAddressAction implements ActionHandler {
             var order = orders.get(orders.size() - 1);
             if (order.getCity() == null) {
                 order.setCity(cityOrAddress);
-                sender.execute(MessageUtil.getMessage(chatId, "Теперь введите название улицы, дом: "));
+                sender.execute(MessageUtil.getMessage(chatId, "Введите адрес в формате 'ул. Название, " +
+                        "номер дома', например 'ул. Передовиков, 13'"));
                 userService.saveUser(appUser);
             } else {
                 if (cityOrAddress.matches("^ул\\. [А-Яа-я\\s]+, \\d+$")) {
@@ -54,12 +59,14 @@ public class EnterAddressAction implements ActionHandler {
                     appUser.setUserState(UserState.ENTER_PRICE);
                     userService.saveUser(appUser);
 
-                    //TODO: add latitude and longitude in DB
                     try {
-                        LocationUtil.getCordByAddress(order.getCity() + ", " + order.getAddress());
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
+                        Map<String, Double> latAndLot = locationService.getCordByAddress(order.getCity() +
+                                ", " + order.getAddress());
+                        order.setLatitude(latAndLot.get("lat"));
+                        order.setLongitude(latAndLot.get("lon"));
+                        userService.saveUser(appUser);
+
+                    } catch (IOException | InterruptedException | TimeoutException e) {
                         throw new RuntimeException(e);
                     }
                 } else {

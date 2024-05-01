@@ -2,14 +2,13 @@ package com.kolyapetrov.telegram_bot.model.service;
 
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
-import com.kolyapetrov.telegram_bot.model.entity.UserState;
+import com.kolyapetrov.telegram_bot.util.UserState;
 import com.kolyapetrov.telegram_bot.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {

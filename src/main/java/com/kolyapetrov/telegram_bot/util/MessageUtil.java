@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
@@ -105,6 +106,14 @@ public class MessageUtil {
         photo.setCaption(description);
         sendMessage.setMedia(photo);
         sendMessage.setReplyMarkup(keyboard);
+        return sendMessage;
+    }
+
+    public static EditMessageText getEditMessageForSeeAds(String chatId, Integer messageId, String text) {
+        EditMessageText sendMessage = new EditMessageText();
+        sendMessage.setChatId(chatId);
+        sendMessage.setMessageId(messageId);
+        sendMessage.setText(text);
         return sendMessage;
     }
 

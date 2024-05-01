@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum Command {
     START(ConstantMessages.START),
     CREATE_NEW_ADVERTISEMENT(ConstantMessages.CREATE_NEW_ADVERTISEMENT),
-    SEE_MY_ADVERTISEMENTS(ConstantMessages.SEE_MY_ADVERTISEMENTS);
+    SEE_MY_ADVERTISEMENTS(ConstantMessages.SEE_MY_ADVERTISEMENTS),
+    SEARCH_FOR_ADS(ConstantMessages.SEARCH_BY_ADVERTISEMENTS);
 
     private final String command;
 

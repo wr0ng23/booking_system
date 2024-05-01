@@ -8,6 +8,7 @@ import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.Command;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.OrdersUtil;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -35,13 +36,27 @@ public class SeeAdsCommand implements CommandHandler {
         String chatId = update.getMessage().getChatId().toString();
 
         List<Order> orders = appUser.getOrders().stream().sorted(Comparator.comparing(Order::getId)).toList();
-        var firstOrder = orders.get(0);
-        String description = firstOrder.getDescription();
-        List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
-        String mainPhotoId = photosOfOrder.get(0).getId();
-        String price = "\n<b>Цена: </b>" + firstOrder.getPrice();
-        sender.execute(MessageUtil.getMessage(chatId, description + price, mainPhotoId,
-                KeyBoardUtil.seeADsKeyboard(orders.get(orders.size() - 1).getId(), firstOrder.getId(),
-                        orders.get(1).getId())));
+        if (orders.isEmpty()) {
+            sender.execute(MessageUtil.getMessage(chatId, "Пока что у вас нет созданных объявлений!"));
+
+        } else {
+            var firstOrder = orders.get(0);
+            String description = firstOrder.getDescription();
+            List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
+            String mainPhotoId = photosOfOrder.get(0).getId();
+            String price = "\n<b>Цена: </b>" + firstOrder.getPrice();
+
+            if (orders.size() > 1) {
+                Long leftOrderId = orders.get(orders.size() - 1).getId();
+                Long currentOrderId = orders.get(0).getId();
+                Long rightOrderId = orders.get(1).getId();
+
+                sender.execute(MessageUtil.getMessage(chatId, description + price, mainPhotoId,
+                        KeyBoardUtil.seeMyADsKeyboard(leftOrderId, currentOrderId, rightOrderId)));
+            } else {
+                sender.execute(MessageUtil.getMessage(chatId, description + price, mainPhotoId,
+                        KeyBoardUtil.seeMyADsKeyboard(orders.get(0).getId())));
+            }
+        }
     }
 }

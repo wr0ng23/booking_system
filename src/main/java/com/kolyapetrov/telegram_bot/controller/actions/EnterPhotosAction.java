@@ -4,7 +4,7 @@ import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.entity.PhotoOfOrder;
-import com.kolyapetrov.telegram_bot.model.entity.UserState;
+import com.kolyapetrov.telegram_bot.util.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.ConstantMessages;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
@@ -48,7 +48,14 @@ public class EnterPhotosAction implements ActionHandler {
                         "больше 10 фотографий! Нажмите кнопку cнизу чтобы подтвердить отправку фотографий."));
             }
 
-        } else if (update.getMessage().getText().startsWith(ConstantMessages.FINISH_SENDING_PHOTOS)) {
+        } else if (update.getMessage().hasText() &&
+                update.getMessage().getText().startsWith(ConstantMessages.FINISH_SENDING_PHOTOS)) {
+
+            Order lastOrder = getLastOrder(appUser);
+            if (lastOrder.getPhotos().isEmpty()) {
+                sender.execute(MessageUtil.getMessage(chatId, "Вам необходимо отправить минмум 1 фото!"));
+                return;
+            }
             appUser.setUserState(UserState.ENTER_DESCRIPTION_OF_AD);
             userService.saveUser(appUser);
             sender.execute(MessageUtil.getMessage(chatId, "Теперь отправьте описание, " +

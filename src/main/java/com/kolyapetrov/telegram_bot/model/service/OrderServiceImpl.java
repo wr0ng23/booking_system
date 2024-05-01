@@ -5,9 +5,16 @@ import com.kolyapetrov.telegram_bot.model.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
+
+    @Override
+    public List<Order> findOrdersByCity(String city) {
+        return orderRepository.findByCity(city);
+    }
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository) {

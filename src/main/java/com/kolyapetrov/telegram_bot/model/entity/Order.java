@@ -37,4 +37,10 @@ Order {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "latitude")
+    private Double latitude;
 }
