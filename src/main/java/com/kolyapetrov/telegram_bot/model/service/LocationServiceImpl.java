@@ -24,7 +24,8 @@ public class LocationServiceImpl implements LocationService {
     @Value("${daData.token}")
     private String tokenDaData;
 
-    private double distBetweenPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
+    @Override
+    public double distBetweenPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
         final int EARTH_RADIUS = 6372795;
         double lat1 = latitudeA * Math.PI / 180;
         double lat2 = latitudeB * Math.PI / 180;
@@ -47,7 +48,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void requestInfoAboutLocationByCords(Double latitude, Double longitude) {
+    public String requestInfoAboutLocationByCords(Double latitude, Double longitude) {
         String apiUrl = "http://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address";
 
         String jsonPayload = "{\"lat\": " + latitude +
@@ -65,17 +66,18 @@ public class LocationServiceImpl implements LocationService {
 
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            System.out.println("Response Code: " + response.statusCode());
-            System.out.println("Response body: " + response.body());
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(response.body());
+            return rootNode.get("suggestions").get(0).get("data").get("city").asText();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return "";
     }
 
     @Override
-    public Map<String, Double> getCordByAddress(String address) throws IOException, InterruptedException, TimeoutException {
+    public Map<String, Double> getCordsByAddress(String address) throws IOException, InterruptedException, TimeoutException {
         String encodedQuery = URLEncoder.encode(address, StandardCharsets.UTF_8);
         String url = "https://catalog.api.2gis.com/3.0/items/geocode?q=" + encodedQuery +
                 "&fields=items.point,items.geometry.centroid&key=" + token2Gis;

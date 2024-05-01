@@ -5,9 +5,11 @@ import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.OrderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -28,12 +30,21 @@ public class SeeOtherAdsCallBackQuery {
         this.orderService = orderService;
     }
 
-    public void handle(UserInfo userInfo, String dataFromCallBackQuery, DefaultAbsSender sender) throws TelegramApiException {
+    public void handle(UserInfo userInfo, String dataFromCallBackQuery, DefaultAbsSender sender)
+            throws TelegramApiException {
         String typeOfCallBackQuery = dataFromCallBackQuery.split(" ")[1];
         Long numberOfOrder = Long.parseLong(dataFromCallBackQuery.split(" ")[2]);
         String city = dataFromCallBackQuery.split(" ")[3];
         userInfo.setNumberOfOrder(numberOfOrder);
         userInfo.setCity(city);
+
+        Order order = orderService.getOrder(numberOfOrder);
+        if (order == null) {
+            DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
+            sender.execute(deleteMessage);
+            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Этого объявления больше не существует!"));
+            return;
+        }
 
         switch (typeOfCallBackQuery) {
             case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, sender);
@@ -61,7 +72,6 @@ public class SeeOtherAdsCallBackQuery {
 
         int indexOfCurrentOrder = getIndexOfOrder(orders, userInfo.getNumberOfOrder());
         Order newCurrentOrder = orders.get(indexOfCurrentOrder);
-        String description = newCurrentOrder.getDescription();
         String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
 
         int[] indexes = getIndexesOfNeighboringOrders(indexOfCurrentOrder, orders.size());
@@ -70,9 +80,8 @@ public class SeeOtherAdsCallBackQuery {
 
         InlineKeyboardMarkup keyboard = KeyBoardUtil.seeOtherADsKeyboard(leftNewOrder.getId(),
                 newCurrentOrder.getId(), rightNewOrder.getId(), userInfo.getCity());
-        String price = "\n<b>Цена: </b>" + newCurrentOrder.getPrice();
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                newMainPhotoId, description + price, keyboard));
+                newMainPhotoId, OrderUtil.getFormattedDescription(newCurrentOrder), keyboard));
     }
 
     private List<Order> getUserOrders(String city) {

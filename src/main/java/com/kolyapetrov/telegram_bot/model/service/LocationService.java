@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 public interface LocationService {
-    void requestInfoAboutLocationByCords(Double latitude, Double longitude);
+    String requestInfoAboutLocationByCords(Double latitude, Double longitude);
 
-    Map<String, Double> getCordByAddress(String address) throws IOException, InterruptedException, TimeoutException;
+    Map<String, Double> getCordsByAddress(String address) throws IOException, InterruptedException, TimeoutException;
+
+    double distBetweenPoints(double latitudeA, double longitudeA, double latitudeB, double longitudeB);
 }

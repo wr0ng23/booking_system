@@ -7,6 +7,7 @@ import com.kolyapetrov.telegram_bot.model.service.OrderService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.OrderUtil;
 import com.kolyapetrov.telegram_bot.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,14 @@ public class SeeMyAdsCallbackQuery {
         Long numberOfOrder = Long.parseLong(dataFromCallBackQuery.split(" ")[2]);
         userInfo.setNumberOfOrder(numberOfOrder);
 
+        Order order = orderService.getOrder(numberOfOrder);
+        if (order == null) {
+            DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
+            sender.execute(deleteMessage);
+            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Этого объявления больше не существует!"));
+            return;
+        }
+
         switch (typeOfCallBackQuery) {
             case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, sender);
             case SEE_PHOTOS_AD -> getOrderPhotosQuery(userInfo, sender);
@@ -63,6 +72,7 @@ public class SeeMyAdsCallbackQuery {
         int index = getIndexOfOrder(orders, userInfo.getNumberOfOrder());
         orderService.deleteOrder(orders.get(index));
 
+        // bad code, but it still works
         if (orders.size() == 1) {
             sender.execute(new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId()));
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "У вас больше нет созданных объявлений!"));
@@ -98,9 +108,7 @@ public class SeeMyAdsCallbackQuery {
 
         int indexOfCurrentOrderInOrderList = getIndexOfOrder(userOrders, userInfo.getNumberOfOrder());
         Order newCurrentOrder = userOrders.get(indexOfCurrentOrderInOrderList);
-        String description = newCurrentOrder.getDescription();
         String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
-        String price = "\n<b>Цена: </b>" + newCurrentOrder.getPrice();
 
         if (userOrders.size() > 1) {
             int[] indexes = getIndexesOfNeighboringOrders(indexOfCurrentOrderInOrderList, userOrders.size());
@@ -111,11 +119,11 @@ public class SeeMyAdsCallbackQuery {
                     newCurrentOrder.getId(), rightNewOrder.getId());
 
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                    newMainPhotoId, description + price, keyboard));
+                    newMainPhotoId, OrderUtil.getFormattedDescription(newCurrentOrder), keyboard));
         } else {
             InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard(newCurrentOrder.getId());
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                    newMainPhotoId, description + price, keyboard));
+                    newMainPhotoId, OrderUtil.getFormattedDescription(newCurrentOrder), keyboard));
         }
 
     }

@@ -30,7 +30,7 @@ Order {
     private Boolean isEditing;
 
     @Column(name = "price")
-    private Double price;
+    private Long price;
 
     @Column(name = "city")
     private String city;

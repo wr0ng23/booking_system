@@ -27,7 +27,8 @@ public class CreateNewAdCommand implements CommandHandler {
 
         sender.execute(MessageUtil.getMessage(chatId, "Для создания объявления отправьте фотографии " +
                 "вашего жилья. Когда отправите нужное количество - нажмите кнопку снизу. " +
-                "Первая отправленная фотография будет главной в объявлении.", KeyBoardUtil.finishPhotoSending()));
+                "Первая отправленная фотография будет главной в объявлении. Максимальное количество фотографий - 10.",
+                KeyBoardUtil.finishPhotoSending()));
         appUser.setUserState(UserState.ENTER_PHOTOS);
         userService.saveUser(appUser);
     }

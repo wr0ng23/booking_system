@@ -60,7 +60,7 @@ public class EnterAddressAction implements ActionHandler {
                     userService.saveUser(appUser);
 
                     try {
-                        Map<String, Double> latAndLot = locationService.getCordByAddress(order.getCity() +
+                        Map<String, Double> latAndLot = locationService.getCordsByAddress(order.getCity() +
                                 ", " + order.getAddress());
                         order.setLatitude(latAndLot.get("lat"));
                         order.setLongitude(latAndLot.get("lon"));

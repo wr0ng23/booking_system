@@ -5,10 +5,7 @@ import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.entity.PhotoOfOrder;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.Command;
-import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
-import com.kolyapetrov.telegram_bot.util.MessageUtil;
-import com.kolyapetrov.telegram_bot.util.OrdersUtil;
+import com.kolyapetrov.telegram_bot.util.*;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -41,20 +38,18 @@ public class SeeAdsCommand implements CommandHandler {
 
         } else {
             var firstOrder = orders.get(0);
-            String description = firstOrder.getDescription();
             List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
             String mainPhotoId = photosOfOrder.get(0).getId();
-            String price = "\n<b>Цена: </b>" + firstOrder.getPrice();
 
             if (orders.size() > 1) {
                 Long leftOrderId = orders.get(orders.size() - 1).getId();
                 Long currentOrderId = orders.get(0).getId();
                 Long rightOrderId = orders.get(1).getId();
 
-                sender.execute(MessageUtil.getMessage(chatId, description + price, mainPhotoId,
+                sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(firstOrder), mainPhotoId,
                         KeyBoardUtil.seeMyADsKeyboard(leftOrderId, currentOrderId, rightOrderId)));
             } else {
-                sender.execute(MessageUtil.getMessage(chatId, description + price, mainPhotoId,
+                sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(firstOrder), mainPhotoId,
                         KeyBoardUtil.seeMyADsKeyboard(orders.get(0).getId())));
             }
         }

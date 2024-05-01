@@ -36,7 +36,7 @@ public class EnterPrice implements ActionHandler {
 
         if (update.getMessage().hasText()) {
             try {
-                Double price = Double.valueOf(update.getMessage().getText());
+                Long price = Long.valueOf(update.getMessage().getText());
                 var orders = appUser.getOrders()
                         .stream()
                         .sorted(Comparator.comparing(Order::getId))
