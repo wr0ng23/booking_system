@@ -1,4 +1,4 @@
-package com.kolyapetrov.telegram_bot.controller.CallBackHandlers;
+package com.kolyapetrov.telegram_bot.controller.callbacks;
 
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.util.CallBackName;
@@ -11,10 +11,10 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 @Component
-public class CallbackQueriesHandler {
+public class CallBackQueriesHandler {
     private final Map<CallBackName, CallBackHandler> callBackHandlerMap;
 
-    public CallbackQueriesHandler(List<CallBackHandler> callBackHandlers) {
+    public CallBackQueriesHandler(List<CallBackHandler> callBackHandlers) {
         this.callBackHandlerMap = callBackHandlers.stream().collect(toMap(CallBackHandler::getCallBack, identity()));
     }
 

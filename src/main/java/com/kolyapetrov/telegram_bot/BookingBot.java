@@ -5,8 +5,8 @@ import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.controller.actions.ActionsHandlerContainer;
-import com.kolyapetrov.telegram_bot.controller.CallBackHandlers.CallbackQueriesHandler;
-import com.kolyapetrov.telegram_bot.controller.commands.CommandsHandlerContainer;
+import com.kolyapetrov.telegram_bot.controller.callbacks.CallBackQueriesHandler;
+import com.kolyapetrov.telegram_bot.controller.commands.CommandsHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
@@ -28,18 +27,18 @@ import java.util.Optional;
 @Component
 public class BookingBot extends TelegramLongPollingBot {
     private final BotConfig botConfig;
-    private final CommandsHandlerContainer commandsHandlerContainer;
+    private final CommandsHandler commandsHandler;
     private final ActionsHandlerContainer actionsHandlerContainer;
     private final UserService userService;
-    private final CallbackQueriesHandler callbackQueriesHandler;
+    private final CallBackQueriesHandler callbackQueriesHandler;
 
     @Autowired
-    public BookingBot(BotConfig botConfig, CommandsHandlerContainer CommandsHandlerContainer,
+    public BookingBot(BotConfig botConfig, CommandsHandler CommandsHandler,
                       ActionsHandlerContainer actionsHandlerContainer, UserService userService,
-                      CallbackQueriesHandler callbackQueriesHandler) {
+                      CallBackQueriesHandler callbackQueriesHandler) {
         super(botConfig.getToken());
         this.botConfig = botConfig;
-        this.commandsHandlerContainer = CommandsHandlerContainer;
+        this.commandsHandler = CommandsHandler;
         this.actionsHandlerContainer = actionsHandlerContainer;
         this.userService = userService;
         this.callbackQueriesHandler = callbackQueriesHandler;
@@ -80,7 +79,7 @@ public class BookingBot extends TelegramLongPollingBot {
             command = commandOptional.get();
         }
 
-        CommandHandler commandHandler = commandsHandlerContainer.retrieveCommand(command);
+        CommandHandler commandHandler = commandsHandler.retrieveCommand(command);
         if (commandHandler != null) {
             commandHandler.handle(update, this);
             return true;

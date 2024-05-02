@@ -1,4 +1,4 @@
-package com.kolyapetrov.telegram_bot.controller.CallBackHandlers;
+package com.kolyapetrov.telegram_bot.controller.callbacks;
 
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
@@ -24,12 +24,12 @@ import java.util.List;
 import static com.kolyapetrov.telegram_bot.util.ConstantMessages.*;
 
 @Component
-public class SeeMyAdsCallbackQuery implements CallBackHandler {
+public class SeeMyAdsCallBackQuery implements CallBackHandler {
     private final UserService userService;
     private final OrderService orderService;
 
     @Autowired
-    public SeeMyAdsCallbackQuery(UserService userService, OrderService orderService) {
+    public SeeMyAdsCallBackQuery(UserService userService, OrderService orderService) {
         this.userService = userService;
         this.orderService = orderService;
     }

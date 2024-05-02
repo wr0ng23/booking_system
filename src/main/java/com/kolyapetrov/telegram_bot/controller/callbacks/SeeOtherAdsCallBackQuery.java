@@ -1,4 +1,4 @@
-package com.kolyapetrov.telegram_bot.controller.CallBackHandlers;
+package com.kolyapetrov.telegram_bot.controller.callbacks;
 
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;

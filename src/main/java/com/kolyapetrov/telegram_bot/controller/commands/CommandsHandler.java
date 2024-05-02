@@ -11,10 +11,10 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
 @Component
-public class CommandsHandlerContainer {
+public class CommandsHandler {
     private final Map<Command, CommandHandler> commandMap;
 
-    public CommandsHandlerContainer(List<CommandHandler> commands) {
+    public CommandsHandler(List<CommandHandler> commands) {
         this.commandMap = commands.stream().collect(toMap(CommandHandler::getCommand, identity()));
     }
 
