@@ -11,19 +11,24 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
 
-    @Override
-    public List<Order> findOrdersByCity(String city) {
-        return orderRepository.findByCity(city);
-    }
-
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
     }
 
     @Override
-    public void saveOrder(Order order) {
+    public String findUserNameByOrderId(Long id) {
+        return orderRepository.findNameOfUserByOrderId(id);
+    }
 
+    @Override
+    public List<Order> findOrdersByCity(String city) {
+        return orderRepository.findByCity(city);
+    }
+
+    @Override
+    public void saveOrder(Order order) {
+        orderRepository.save(order);
     }
 
     @Override

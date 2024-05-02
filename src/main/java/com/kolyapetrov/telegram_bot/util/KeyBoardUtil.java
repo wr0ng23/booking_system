@@ -143,4 +143,42 @@ public class KeyBoardUtil {
         button.setCallbackData(OTHER_ADS + " " + nameOfButton + " " + idOfCurrentOrder + " " + city);
         return button;
     }
+
+    public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder,
+                                                           Double latitude, Double longitude) {
+        InlineKeyboardButton leftOrderButton = getButtonForLocalAds(LEFT_AD, idOfLeftOrder, latitude, longitude);
+        InlineKeyboardButton rightOrderButton = getButtonForLocalAds(RIGHT_AD, idOfRightOrder, latitude, longitude);
+        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
+        keyboardButtonsRow1.add(leftOrderButton);
+        keyboardButtonsRow1.add(rightOrderButton);
+
+        InlineKeyboardButton seePhotosOrderButton = getButtonForLocalAds(SEE_PHOTOS_AD, idOfCurrentOrder, latitude, longitude);
+        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
+        keyboardButtonsRow2.add(seePhotosOrderButton);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow2);
+        rowList.add(keyboardButtonsRow1);
+
+        return new InlineKeyboardMarkup(rowList);
+    }
+
+    public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfCurrentOrder) {
+        InlineKeyboardButton seePhotosOrderButton = getButtonForLocalAds(SEE_PHOTOS_AD, idOfCurrentOrder, 0.0, 0.0);
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        keyboardButtonsRow.add(seePhotosOrderButton);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow);
+
+        return new InlineKeyboardMarkup(rowList);
+    }
+
+    private static InlineKeyboardButton getButtonForLocalAds(String nameOfButton, Long idOfCurrentOrder, Double latitude,
+                                                             Double longitude) {
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(nameOfButton);
+        button.setCallbackData(LOCAL_ADS + " " + nameOfButton + " " + idOfCurrentOrder + " " + latitude + " " + longitude);
+        return button;
+    }
 }

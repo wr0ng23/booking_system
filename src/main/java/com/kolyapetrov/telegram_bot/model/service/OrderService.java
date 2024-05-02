@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface OrderService {
     void saveOrder(Order order);
+    String findUserNameByOrderId(Long id);
     Order getOrder(Long id);
     void deleteOrder(Order order);
     List<Order> findOrdersByCity(String city);

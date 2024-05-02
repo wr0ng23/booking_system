@@ -15,10 +15,10 @@ import java.util.Comparator;
 import java.util.List;
 
 @Component
-public class SeeAdsCommand implements CommandHandler {
+public class SeeMyAdsCommand implements CommandHandler {
     public UserService userService;
 
-    public SeeAdsCommand(UserService userService) {
+    public SeeMyAdsCommand(UserService userService) {
         this.userService = userService;
     }
 
@@ -46,10 +46,10 @@ public class SeeAdsCommand implements CommandHandler {
                 Long currentOrderId = orders.get(0).getId();
                 Long rightOrderId = orders.get(1).getId();
 
-                sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(firstOrder), mainPhotoId,
+                sender.execute(MessageUtil.getMessage(chatId, String.valueOf(firstOrder), mainPhotoId,
                         KeyBoardUtil.seeMyADsKeyboard(leftOrderId, currentOrderId, rightOrderId)));
             } else {
-                sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(firstOrder), mainPhotoId,
+                sender.execute(MessageUtil.getMessage(chatId, String.valueOf(firstOrder), mainPhotoId,
                         KeyBoardUtil.seeMyADsKeyboard(orders.get(0).getId())));
             }
         }

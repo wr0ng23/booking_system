@@ -3,10 +3,10 @@ package com.kolyapetrov.telegram_bot.controller.actions;
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
-import com.kolyapetrov.telegram_bot.util.UserState;
 import com.kolyapetrov.telegram_bot.model.service.LocationService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -48,33 +48,29 @@ public class EnterAddressAction implements ActionHandler {
 
             var order = orders.get(orders.size() - 1);
             if (order.getCity() == null) {
-                order.setCity(cityOrAddress);
-                sender.execute(MessageUtil.getMessage(chatId, "Введите адрес в формате 'ул. Название, " +
-                        "номер дома', например 'ул. Передовиков, 13'"));
+                String capitalizedCity = (Character.toUpperCase(cityOrAddress.charAt(0)) + cityOrAddress.substring(1));
+                order.setCity(capitalizedCity);
+                sender.execute(MessageUtil.getMessage(chatId, "Введите адрес в формате: <Название улицы>, <номер дома>" +
+                        ", например 'Передовиков, 13'"));
                 userService.saveUser(appUser);
+
             } else {
-                if (cityOrAddress.matches("^ул\\. [А-Яа-я\\s]+, \\d+$")) {
-                    order.setAddress(cityOrAddress);
-                    sender.execute(MessageUtil.getMessage(chatId, "Теперь введите цену: "));
-                    appUser.setUserState(UserState.ENTER_PRICE);
+                order.setAddress(cityOrAddress);
+                sender.execute(MessageUtil.getMessage(chatId, "Теперь введите цену: "));
+                appUser.setUserState(UserState.ENTER_PRICE);
+                userService.saveUser(appUser);
+
+                try {
+                    Map<String, Double> latAndLot = locationService.getCordsByAddress(order.getCity() +
+                            ", " + order.getAddress());
+                    order.setLatitude(latAndLot.get("lat"));
+                    order.setLongitude(latAndLot.get("lon"));
                     userService.saveUser(appUser);
 
-                    try {
-                        Map<String, Double> latAndLot = locationService.getCordsByAddress(order.getCity() +
-                                ", " + order.getAddress());
-                        order.setLatitude(latAndLot.get("lat"));
-                        order.setLongitude(latAndLot.get("lon"));
-                        userService.saveUser(appUser);
-
-                    } catch (IOException | InterruptedException | TimeoutException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    sender.execute(MessageUtil.getMessage(chatId, "Введите адрес в формате 'ул. Название, " +
-                            "номер дома', например 'ул. Передовиков, 13'"));
+                } catch (IOException | InterruptedException | TimeoutException e) {
+                    throw new RuntimeException(e);
                 }
             }
-
         } else {
             sender.execute(MessageUtil.getMessage(chatId, "Введите город и адрес для сдачи вашего жилья текстом!"));
         }

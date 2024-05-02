@@ -7,7 +7,10 @@ import com.kolyapetrov.telegram_bot.model.entity.PhotoOfOrder;
 import com.kolyapetrov.telegram_bot.model.service.LocationService;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.*;
+import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
+import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.OrderUtil;
+import com.kolyapetrov.telegram_bot.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -29,7 +32,8 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
     private final OrderService orderService;
 
     @Autowired
-    public EnterLocationForSeeingAdsAction(UserService userService, OrderService orderService, LocationService locationService) {
+    public EnterLocationForSeeingAdsAction(UserService userService, OrderService orderService,
+                                           LocationService locationService) {
         this.userService = userService;
         this.orderService = orderService;
         this.locationService = locationService;
@@ -56,21 +60,35 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
             System.out.println("My lon: " + location.getLongitude());
             String city = locationService.requestInfoAboutLocationByCords(location.getLatitude(), location.getLongitude());
             List<Order> orders = orderService.findOrdersByCity(city);
-            orders.sort(Comparator.comparingDouble(order ->
-                    locationService.distBetweenPoints(order.getLatitude(), order.getLongitude(), location.getLatitude(),
+
+            orders.sort(Comparator.comparingDouble(myOrder ->
+                    locationService.distBetweenPoints(myOrder.getLatitude(), myOrder.getLongitude(), location.getLatitude(),
                             location.getLongitude())));
 
-            var order = orders.get(0);
-            List<PhotoOfOrder> photosOfOrder = order.getPhotos();
-            String mainPhotoId = photosOfOrder.get(0).getId();
-            double distanceInMeters = locationService.distBetweenPoints(order.getLatitude(), order.getLongitude(),
-                    location.getLatitude(), location.getLongitude());
-            double distanceInKilometers = distanceInMeters / 1000.0;
-            String formattedDistance = String.format("%.2f", distanceInKilometers);
-            String distanceToPerson = "\n\nРасстояние до вас: " + formattedDistance + " км";
+            if (orders.isEmpty()) {
+                sender.execute(MessageUtil.getMessage(chatId, "Вокруг вас не найдено объявлений!"));
 
-            sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(order) +
-                            distanceToPerson, mainPhotoId));
+            } else {
+                var order = orders.get(0);
+                List<PhotoOfOrder> photosOfOrder = order.getPhotos();
+                String mainPhotoId = photosOfOrder.get(0).getId();
+                double distanceInMeters = locationService.distBetweenPoints(order.getLatitude(), order.getLongitude(),
+                        location.getLatitude(), location.getLongitude());
+                String distanceToPerson = OrderUtil.getDistanceToPerson(distanceInMeters);
+
+                if (orders.size() > 1) {
+                    Long leftOrderId = orders.get(orders.size() - 1).getId();
+                    Long currentOrderId = orders.get(0).getId();
+                    Long rightOrderId = orders.get(1).getId();
+
+                    sender.execute(MessageUtil.getMessage(chatId, order + distanceToPerson, mainPhotoId,
+                            KeyBoardUtil.seeLocalAdsKeyboard(leftOrderId, currentOrderId, rightOrderId, location.getLatitude(),
+                                    location.getLongitude())));
+                } else {
+                    sender.execute(MessageUtil.getMessage(chatId, order + distanceToPerson, mainPhotoId,
+                            KeyBoardUtil.seeLocalAdsKeyboard(order.getId())));
+                }
+            }
 
         } else if (update.getMessage().hasText()) {
             String city = update.getMessage().getText();
@@ -88,10 +106,10 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
                     Long leftOrderId = orders.get(orders.size() - 1).getId();
                     Long currentOrderId = orders.get(0).getId();
                     Long rightOrderId = orders.get(1).getId();
-                    sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(firstOrder), mainPhotoId,
+                    sender.execute(MessageUtil.getMessage(chatId, firstOrder.toString(), mainPhotoId,
                             KeyBoardUtil.seeOtherADsKeyboard(leftOrderId, currentOrderId, rightOrderId, capitalizedCity)));
                 } else {
-                    sender.execute(MessageUtil.getMessage(chatId, OrderUtil.getFormattedDescription(firstOrder), mainPhotoId,
+                    sender.execute(MessageUtil.getMessage(chatId, firstOrder.toString(), mainPhotoId,
                             KeyBoardUtil.seeOtherADsKeyboard(orders.get(0).getId(), capitalizedCity)));
                 }
             }
