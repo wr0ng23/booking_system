@@ -1,0 +1,24 @@
+package com.kolyapetrov.telegram_bot.controller.CallBackHandlers;
+
+import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
+import com.kolyapetrov.telegram_bot.util.CallBackName;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
+@Component
+public class CallbackQueriesHandler {
+    private final Map<CallBackName, CallBackHandler> callBackHandlerMap;
+
+    public CallbackQueriesHandler(List<CallBackHandler> callBackHandlers) {
+        this.callBackHandlerMap = callBackHandlers.stream().collect(toMap(CallBackHandler::getCallBack, identity()));
+    }
+
+    public CallBackHandler retrieveCallBack(CallBackName callBackName) {
+        return callBackHandlerMap.getOrDefault(callBackName, null);
+    }
+}

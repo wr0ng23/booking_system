@@ -1,19 +1,25 @@
 package com.kolyapetrov.telegram_bot;
 
 import com.kolyapetrov.telegram_bot.config.BotConfig;
-import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
+import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
+import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.controller.actions.ActionsHandlerContainer;
-import com.kolyapetrov.telegram_bot.controller.actions.CallbackQueriesHandler;
-import com.kolyapetrov.telegram_bot.controller.commands.*;
+import com.kolyapetrov.telegram_bot.controller.CallBackHandlers.CallbackQueriesHandler;
+import com.kolyapetrov.telegram_bot.controller.commands.CommandsHandlerContainer;
+import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
+import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
-import com.kolyapetrov.telegram_bot.util.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
+import com.kolyapetrov.telegram_bot.util.CallBackName;
 import com.kolyapetrov.telegram_bot.util.Command;
+import com.kolyapetrov.telegram_bot.util.ConstantMessages;
+import com.kolyapetrov.telegram_bot.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
@@ -54,10 +60,7 @@ public class BookingBot extends TelegramLongPollingBot {
     }
 
     private void handle(Update update) throws TelegramApiException {
-        if (update.hasCallbackQuery()) {
-            handleCallBackQuery(update);
-            return;
-        }
+        if (handleCallBackQuery(update)) return;
         if (handleCommand(update)) return;
         handleAction(update);
     }
@@ -94,7 +97,56 @@ public class BookingBot extends TelegramLongPollingBot {
         }
     }
 
-    private void handleCallBackQuery(Update update) throws TelegramApiException {
-        callbackQueriesHandler.handle(update, this);
+    private boolean handleCallBackQuery(Update update) throws TelegramApiException {
+        if (!update.hasCallbackQuery()) return false;
+
+        String dataFromCallBack = update.getCallbackQuery().getData();
+        String typeOfCallBackQuery = dataFromCallBack.split(" ")[0];
+        Optional<CallBackName> callBackNameOptional = Arrays.stream(CallBackName.values())
+                .filter(c -> c.getCallBackName().equals(typeOfCallBackQuery))
+                .findFirst();
+
+        CallBackName callBackName;
+        if (callBackNameOptional.isEmpty()) {
+            return false;
+        } else {
+            callBackName = callBackNameOptional.get();
+        }
+
+        CallBackHandler callBackHandler = callbackQueriesHandler.retrieveCallBack(callBackName);
+        if (callBackHandler != null) {
+
+            callBackHandler.handle(getUserInfo(update), getCallBackInfo(dataFromCallBack), this);
+            return true;
+        } else return false;
+    }
+
+    private UserInfo getUserInfo(Update update) {
+        var callBack = update.getCallbackQuery();
+        AppUser appUser = userService.getUser(callBack.getFrom());
+        String chatId = callBack.getFrom().getId().toString();
+        Integer messageId = callBack.getMessage().getMessageId();
+
+        return UserInfo.builder()
+                .appUser(appUser)
+                .chatId(chatId)
+                .messageId(messageId)
+                .build();
+    }
+
+    private CallBackInfo getCallBackInfo(String callBack) {
+        String[] callBackParts = callBack.split(" ");
+        CallBackInfo callBackInfo =  CallBackInfo.builder()
+                .nameOfButton(callBackParts[1])
+                .numberOfOrder(Long.parseLong(callBackParts[2]))
+                .build();
+
+        if (callBackParts[0].equals(ConstantMessages.OTHER_ADS)) {
+            callBackInfo.setCity(callBackParts[3]);
+        } else if (callBackParts[0].equals(ConstantMessages.LOCAL_ADS)) {
+            callBackInfo.setLatitude(Double.parseDouble(callBackParts[3]));
+            callBackInfo.setLongitude(Double.parseDouble(callBackParts[4]));
+        }
+        return callBackInfo;
     }
 }

@@ -82,7 +82,7 @@ public class MessageUtil {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(message);
-        sendMessage.enableHtml(true);
+//        sendMessage.enableHtml(true);
         return sendMessage;
     }
 

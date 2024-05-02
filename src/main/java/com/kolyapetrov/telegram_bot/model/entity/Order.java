@@ -43,4 +43,12 @@ Order {
 
     @Column(name = "latitude")
     private Double latitude;
+
+    @Override
+    public String toString() {
+        return "<b>Описание:</b>\n" + getDescription() + "\n\n" +
+                "<b>Цена:</b> " + getPrice() + " руб." + "\n" +
+                "<b>Город:</b> " + getCity() + "\n" +
+                "<b>Адрес:</b> " + getAddress();
+    }
 }

@@ -12,6 +12,4 @@ public class UserInfo {
     private AppUser appUser;
     private String chatId;
     private Integer messageId;
-    private Long numberOfOrder;
-    private String city;
 }

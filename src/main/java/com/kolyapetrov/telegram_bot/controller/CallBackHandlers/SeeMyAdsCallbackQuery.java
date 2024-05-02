@@ -1,14 +1,13 @@
-package com.kolyapetrov.telegram_bot.controller.actions;
+package com.kolyapetrov.telegram_bot.controller.CallBackHandlers;
 
+import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
+import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
-import com.kolyapetrov.telegram_bot.util.MessageUtil;
-import com.kolyapetrov.telegram_bot.util.OrderUtil;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -25,7 +24,7 @@ import java.util.List;
 import static com.kolyapetrov.telegram_bot.util.ConstantMessages.*;
 
 @Component
-public class SeeMyAdsCallbackQuery {
+public class SeeMyAdsCallbackQuery implements CallBackHandler {
     private final UserService userService;
     private final OrderService orderService;
 
@@ -35,11 +34,15 @@ public class SeeMyAdsCallbackQuery {
         this.orderService = orderService;
     }
 
-    public void handle(UserInfo userInfo, String dataFromCallBackQuery, DefaultAbsSender sender)
-            throws TelegramApiException {
-        String typeOfCallBackQuery = dataFromCallBackQuery.split(" ")[1];
-        Long numberOfOrder = Long.parseLong(dataFromCallBackQuery.split(" ")[2]);
-        userInfo.setNumberOfOrder(numberOfOrder);
+    @Override
+    public CallBackName getCallBack() {
+        return CallBackName.MY_ADS;
+    }
+
+    @Override
+    public void handle(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException{
+        String nameOfButton = callBackInfo.getNameOfButton();
+        Long numberOfOrder = callBackInfo.getNumberOfOrder();
 
         Order order = orderService.getOrder(numberOfOrder);
         if (order == null) {
@@ -49,27 +52,27 @@ public class SeeMyAdsCallbackQuery {
             return;
         }
 
-        switch (typeOfCallBackQuery) {
-            case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, sender);
-            case SEE_PHOTOS_AD -> getOrderPhotosQuery(userInfo, sender);
-            case DELETE_AD -> deleteOrderQuery(userInfo, sender);
-            case EDIT_AD -> editOrderQuery(userInfo, sender);
+        switch (nameOfButton) {
+            case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, callBackInfo, sender);
+            case SEE_PHOTOS_AD -> getOrderPhotosQuery(userInfo, callBackInfo, sender);
+            case DELETE_AD -> deleteOrderQuery(userInfo, callBackInfo, sender);
+            case EDIT_AD -> editOrderQuery(userInfo, callBackInfo, sender);
         }
     }
 
-    private void editOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
+    private void editOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         userInfo.getAppUser().setUserState(UserState.EDIT_AD);
         var orders = getUserOrders(userInfo.getAppUser());
-        var order = orders.get(getIndexOfOrder(orders, userInfo.getNumberOfOrder()));
+        var order = orders.get(OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder()));
         order.setIsEditing(true);
         userService.saveUser(userInfo.getAppUser());
         sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Введите новое описание для объявления: "));
     }
 
-    private void deleteOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
+    private void deleteOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         AppUser appUser = userInfo.getAppUser();
         List<Order> orders = getUserOrders(appUser);
-        int index = getIndexOfOrder(orders, userInfo.getNumberOfOrder());
+        int index = OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder());
         orderService.deleteOrder(orders.get(index));
 
         // bad code, but it still works
@@ -78,22 +81,20 @@ public class SeeMyAdsCallbackQuery {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "У вас больше нет созданных объявлений!"));
 
         } else {
-            int[] indexes = getIndexesOfNeighboringOrders(index, orders.size());
-            userInfo.setNumberOfOrder(orders.get(indexes[1]).getId());
+            int[] indexes = OrderUtil.getIndexesOfNeighboringOrders(index, orders.size());
+            callBackInfo.setNumberOfOrder(orders.get(indexes[1]).getId());
 
             orders.remove(index);
             appUser.setOrders(orders);
             userService.saveUser(appUser);
-            getNextOrderQuery(userInfo, sender);
+            getNextOrderQuery(userInfo, callBackInfo, sender);
         }
     }
 
-    private void getOrderPhotosQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
-        List<Order> userOrders = getUserOrders(userInfo.getAppUser());
-        int indexOfCurrentOrder = getIndexOfOrder(userOrders, userInfo.getNumberOfOrder());
-        Order newCurrentOrder = userOrders.get(indexOfCurrentOrder);
+    private void getOrderPhotosQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
+        Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
 
-        var photos = newCurrentOrder.getPhotos();
+        var photos = order.getPhotos();
         if (photos.size() == 1) {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), photos.get(0).getId(), userInfo.getMessageId()));
         } else {
@@ -103,15 +104,15 @@ public class SeeMyAdsCallbackQuery {
         }
     }
 
-    private void getNextOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
+    private void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         List<Order> userOrders = getUserOrders(userInfo.getAppUser());
 
-        int indexOfCurrentOrderInOrderList = getIndexOfOrder(userOrders, userInfo.getNumberOfOrder());
+        int indexOfCurrentOrderInOrderList = OrderUtil.getIndexOfOrder(userOrders, callBackInfo.getNumberOfOrder());
         Order newCurrentOrder = userOrders.get(indexOfCurrentOrderInOrderList);
         String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
 
         if (userOrders.size() > 1) {
-            int[] indexes = getIndexesOfNeighboringOrders(indexOfCurrentOrderInOrderList, userOrders.size());
+            int[] indexes = OrderUtil.getIndexesOfNeighboringOrders(indexOfCurrentOrderInOrderList, userOrders.size());
             Order leftNewOrder = userOrders.get(indexes[0]);
             Order rightNewOrder = userOrders.get(indexes[1]);
 
@@ -119,11 +120,11 @@ public class SeeMyAdsCallbackQuery {
                     newCurrentOrder.getId(), rightNewOrder.getId());
 
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                    newMainPhotoId, OrderUtil.getFormattedDescription(newCurrentOrder), keyboard));
+                    newMainPhotoId, String.valueOf(newCurrentOrder), keyboard));
         } else {
             InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard(newCurrentOrder.getId());
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                    newMainPhotoId, OrderUtil.getFormattedDescription(newCurrentOrder), keyboard));
+                    newMainPhotoId, String.valueOf(newCurrentOrder), keyboard));
         }
 
     }
@@ -133,32 +134,5 @@ public class SeeMyAdsCallbackQuery {
                 .stream()
                 .sorted(Comparator.comparing(Order::getId))
                 .toList());
-    }
-
-    private int getIndexOfOrder(List<Order> orders, Long numberOfOrder) {
-        for (int i = 0; i < orders.size(); ++i) {
-            Order order = orders.get(i);
-            if (order.getId().equals(numberOfOrder)) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    private int[] getIndexesOfNeighboringOrders(int indexOfCurrentOrder, int size) {
-        int[] indexes = new int[2];
-
-        if (indexOfCurrentOrder == 0) {
-            indexes[0] = size - 1;
-            indexes[1] = indexOfCurrentOrder + 1;
-        } else if (indexOfCurrentOrder == size - 1) {
-            indexes[0] = indexOfCurrentOrder - 1;
-            indexes[1] = 0;
-        } else {
-            indexes[0] = indexOfCurrentOrder - 1;
-            indexes[1] = indexOfCurrentOrder + 1;
-        }
-
-        return indexes;
     }
 }

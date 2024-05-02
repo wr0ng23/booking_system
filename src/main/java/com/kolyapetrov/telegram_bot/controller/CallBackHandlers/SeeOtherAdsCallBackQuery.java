@@ -1,8 +1,11 @@
-package com.kolyapetrov.telegram_bot.controller.actions;
+package com.kolyapetrov.telegram_bot.controller.CallBackHandlers;
 
+import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
+import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
+import com.kolyapetrov.telegram_bot.util.CallBackName;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import com.kolyapetrov.telegram_bot.util.OrderUtil;
@@ -22,7 +25,7 @@ import java.util.List;
 import static com.kolyapetrov.telegram_bot.util.ConstantMessages.*;
 
 @Component
-public class SeeOtherAdsCallBackQuery {
+public class SeeOtherAdsCallBackQuery implements CallBackHandler {
     private final OrderService orderService;
 
     @Autowired
@@ -30,15 +33,12 @@ public class SeeOtherAdsCallBackQuery {
         this.orderService = orderService;
     }
 
-    public void handle(UserInfo userInfo, String dataFromCallBackQuery, DefaultAbsSender sender)
+    @Override
+    public void handle(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender)
             throws TelegramApiException {
-        String typeOfCallBackQuery = dataFromCallBackQuery.split(" ")[1];
-        Long numberOfOrder = Long.parseLong(dataFromCallBackQuery.split(" ")[2]);
-        String city = dataFromCallBackQuery.split(" ")[3];
-        userInfo.setNumberOfOrder(numberOfOrder);
-        userInfo.setCity(city);
+        String buttonCallBack = callBackInfo.getNameOfButton();
 
-        Order order = orderService.getOrder(numberOfOrder);
+        Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
         if (order == null) {
             DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
             sender.execute(deleteMessage);
@@ -46,18 +46,16 @@ public class SeeOtherAdsCallBackQuery {
             return;
         }
 
-        switch (typeOfCallBackQuery) {
-            case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, sender);
-            case SEE_PHOTOS_AD -> getOrderPhotosQuery(userInfo, sender);
+        switch (buttonCallBack) {
+            case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, callBackInfo, sender);
+            case SEE_PHOTOS_AD -> getOrderPhotosQuery(userInfo, callBackInfo, sender);
         }
     }
 
-    void getOrderPhotosQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
-        List<Order> orders = getUserOrders(userInfo.getCity());
-        int indexOfCurrentOrder = getIndexOfOrder(orders, userInfo.getNumberOfOrder());
-        Order newCurrentOrder = orders.get(indexOfCurrentOrder);
+    void getOrderPhotosQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
+        Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
 
-        var photos = newCurrentOrder.getPhotos();
+        var photos = order.getPhotos();
         if (photos.size() == 1) {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), photos.get(0).getId(), userInfo.getMessageId()));
         } else {
@@ -67,21 +65,22 @@ public class SeeOtherAdsCallBackQuery {
         }
     }
 
-    private void getNextOrderQuery(UserInfo userInfo, DefaultAbsSender sender) throws TelegramApiException {
-        List<Order> orders = getUserOrders(userInfo.getCity());
+    private void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
+        List<Order> orders = getUserOrders(callBackInfo.getCity());
 
-        int indexOfCurrentOrder = getIndexOfOrder(orders, userInfo.getNumberOfOrder());
+        int indexOfCurrentOrder = OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder());
         Order newCurrentOrder = orders.get(indexOfCurrentOrder);
         String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
 
-        int[] indexes = getIndexesOfNeighboringOrders(indexOfCurrentOrder, orders.size());
+        int[] indexes = OrderUtil.getIndexesOfNeighboringOrders(indexOfCurrentOrder, orders.size());
         Order leftNewOrder = orders.get(indexes[0]);
         Order rightNewOrder = orders.get(indexes[1]);
 
         InlineKeyboardMarkup keyboard = KeyBoardUtil.seeOtherADsKeyboard(leftNewOrder.getId(),
-                newCurrentOrder.getId(), rightNewOrder.getId(), userInfo.getCity());
+                newCurrentOrder.getId(), rightNewOrder.getId(), callBackInfo.getCity());
+        String userName = "@" + orderService.findUserNameByOrderId(newCurrentOrder.getId());
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                newMainPhotoId, OrderUtil.getFormattedDescription(newCurrentOrder), keyboard));
+                newMainPhotoId, newCurrentOrder+ "\n\nАвтор объявления: " + userName, keyboard));
     }
 
     private List<Order> getUserOrders(String city) {
@@ -91,30 +90,9 @@ public class SeeOtherAdsCallBackQuery {
                 .toList();
     }
 
-    private int getIndexOfOrder(List<Order> orders, Long numberOfOrder) {
-        for (int i = 0; i < orders.size(); ++i) {
-            Order order = orders.get(i);
-            if (order.getId().equals(numberOfOrder)) {
-                return i;
-            }
-        }
-        return 0;
-    }
 
-    private int[] getIndexesOfNeighboringOrders(int indexOfCurrentOrder, int size) {
-        int[] indexes = new int[2];
-
-        if (indexOfCurrentOrder == 0) {
-            indexes[0] = size - 1;
-            indexes[1] = indexOfCurrentOrder + 1;
-        } else if (indexOfCurrentOrder == size - 1) {
-            indexes[0] = indexOfCurrentOrder - 1;
-            indexes[1] = 0;
-        } else {
-            indexes[0] = indexOfCurrentOrder - 1;
-            indexes[1] = indexOfCurrentOrder + 1;
-        }
-
-        return indexes;
+    @Override
+    public CallBackName getCallBack() {
+        return CallBackName.OTHER_ADS;
     }
 }
