@@ -18,11 +18,14 @@ import com.kolyapetrov.telegram_bot.util.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Arrays;
 import java.util.Optional;
+
+import static com.kolyapetrov.telegram_bot.util.ConstantMessages.*;
 
 @Component
 public class BookingBot extends TelegramLongPollingBot {
@@ -135,16 +138,22 @@ public class BookingBot extends TelegramLongPollingBot {
 
     private CallBackInfo getCallBackInfo(String callBack) {
         String[] callBackParts = callBack.split(" ");
-        CallBackInfo callBackInfo =  CallBackInfo.builder()
-                .nameOfButton(callBackParts[1])
-                .numberOfOrder(Long.parseLong(callBackParts[2]))
-                .build();
+        CallBackInfo callBackInfo =  CallBackInfo.builder().build();
 
-        if (callBackParts[0].equals(ConstantMessages.OTHER_ADS)) {
-            callBackInfo.setCity(callBackParts[3]);
-        } else if (callBackParts[0].equals(ConstantMessages.LOCAL_ADS)) {
-            callBackInfo.setLatitude(Double.parseDouble(callBackParts[3]));
-            callBackInfo.setLongitude(Double.parseDouble(callBackParts[4]));
+        switch (callBackParts[0]) {
+            case OTHER_ADS, LOCAL_ADS, MY_ADS -> {
+                callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
+                callBackInfo.setNameOfButton(callBackParts[1]);
+            }
+        }
+
+        switch (callBackParts[0]) {
+            case OTHER_ADS -> callBackInfo.setCity(callBackParts[3]);
+            case BOOKING_PRIVATE -> callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
+            case LOCAL_ADS -> {
+                callBackInfo.setLatitude(Double.parseDouble(callBackParts[3]));
+                callBackInfo.setLongitude(Double.parseDouble(callBackParts[4]));
+            }
         }
         return callBackInfo;
     }

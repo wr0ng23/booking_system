@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,4 +29,7 @@ public class AppUser {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "id_of_user")
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    Set<Booking> bookings;
 }
