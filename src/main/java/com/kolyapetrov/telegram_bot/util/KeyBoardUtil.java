@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,15 +111,17 @@ public class KeyBoardUtil {
 
     public static InlineKeyboardMarkup seeOtherADsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder,
                                                            String city) {
-        InlineKeyboardButton leftOrderButton = getButtonForOtherAds(LEFT_AD, idOfLeftOrder, city);
-        InlineKeyboardButton rightOrderButton = getButtonForOtherAds(RIGHT_AD, idOfRightOrder, city);
+        InlineKeyboardButton leftOrderButton = getButton(OTHER_ADS, LEFT_AD, idOfLeftOrder, city);
+        InlineKeyboardButton rightOrderButton = getButton(OTHER_ADS, RIGHT_AD, idOfRightOrder, city);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(leftOrderButton);
         keyboardButtonsRow1.add(rightOrderButton);
 
-        InlineKeyboardButton seePhotosOrderButton = getButtonForOtherAds(SEE_PHOTOS_AD, idOfCurrentOrder, city);
+        InlineKeyboardButton seePhotosOrderButton = getButton(OTHER_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, city);
+        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
         keyboardButtonsRow2.add(seePhotosOrderButton);
+        keyboardButtonsRow2.add(bookAdButton);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow2);
@@ -127,9 +131,11 @@ public class KeyBoardUtil {
     }
 
     public static InlineKeyboardMarkup seeOtherADsKeyboard(Long idOfCurrentOrder, String city) {
-        InlineKeyboardButton seePhotosOrderButton = getButtonForOtherAds(SEE_PHOTOS_AD, idOfCurrentOrder, city);
+        InlineKeyboardButton seePhotosOrderButton = getButton(OTHER_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, city);
+        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         keyboardButtonsRow.add(seePhotosOrderButton);
+        keyboardButtonsRow.add(bookAdButton);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow);
@@ -137,24 +143,20 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    private static InlineKeyboardButton getButtonForOtherAds(String nameOfButton, Long idOfCurrentOrder, String city) {
-        InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(nameOfButton);
-        button.setCallbackData(OTHER_ADS + " " + nameOfButton + " " + idOfCurrentOrder + " " + city);
-        return button;
-    }
-
     public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder,
                                                            Double latitude, Double longitude) {
-        InlineKeyboardButton leftOrderButton = getButtonForLocalAds(LEFT_AD, idOfLeftOrder, latitude, longitude);
-        InlineKeyboardButton rightOrderButton = getButtonForLocalAds(RIGHT_AD, idOfRightOrder, latitude, longitude);
+        InlineKeyboardButton leftOrderButton = getButton(LOCAL_ADS, LEFT_AD, idOfLeftOrder, latitude, longitude);
+        InlineKeyboardButton rightOrderButton = getButton(LOCAL_ADS, RIGHT_AD, idOfRightOrder, latitude, longitude);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(leftOrderButton);
         keyboardButtonsRow1.add(rightOrderButton);
 
-        InlineKeyboardButton seePhotosOrderButton = getButtonForLocalAds(SEE_PHOTOS_AD, idOfCurrentOrder, latitude, longitude);
+        InlineKeyboardButton seePhotosOrderButton = getButton(LOCAL_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, latitude, longitude);
+        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
+
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
         keyboardButtonsRow2.add(seePhotosOrderButton);
+        keyboardButtonsRow2.add(bookAdButton);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow2);
@@ -164,9 +166,11 @@ public class KeyBoardUtil {
     }
 
     public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfCurrentOrder) {
-        InlineKeyboardButton seePhotosOrderButton = getButtonForLocalAds(SEE_PHOTOS_AD, idOfCurrentOrder, 0.0, 0.0);
+        InlineKeyboardButton seePhotosOrderButton = getButton(LOCAL_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, 0.0, 0.0);
+        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         keyboardButtonsRow.add(seePhotosOrderButton);
+        keyboardButtonsRow.add(bookAdButton);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow);
@@ -174,11 +178,61 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    private static InlineKeyboardButton getButtonForLocalAds(String nameOfButton, Long idOfCurrentOrder, Double latitude,
-                                                             Double longitude) {
+    private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long idOfCurrentOrder,
+                                                  String city) {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(nameOfButton);
-        button.setCallbackData(LOCAL_ADS + " " + nameOfButton + " " + idOfCurrentOrder + " " + latitude + " " + longitude);
+        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder + " " + city);
         return button;
+    }
+
+    private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long idOfCurrentOrder) {
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(nameOfButton);
+        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder);
+        return button;
+    }
+
+    private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long idOfCurrentOrder,
+                                                  Double latitude, Double longitude) {
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(nameOfButton);
+        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder + " " + latitude + " " + longitude);
+        return button;
+    }
+
+    public static InlineKeyboardMarkup getKeyboardForDates(Long numberOfOrder, List<LocalDate> alreadyBooked) {
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
+
+        int daysInMonth = currentDate.lengthOfMonth();
+        int columns = 3;
+
+        for (int day = currentDate.getDayOfMonth(); day <= daysInMonth; day++) {
+            LocalDate date = currentDate.withDayOfMonth(day);
+            if (!alreadyBooked.contains(date)) {
+                String buttonText = date.format(formatter);
+                String callbackData = SELECT_DATE + " " + date + " " + numberOfOrder;
+                InlineKeyboardButton button = InlineKeyboardButton.builder()
+                        .text("⬜ " + buttonText)
+                        .callbackData(callbackData)
+                        .build();
+
+            /*if (date.equals(selectedDate)) {
+                button.setText("🔳 " + buttonText);
+                button.setCallbackData("SELECTED_DATE_" + date);
+            }*/
+
+                if ((day - currentDate.getDayOfMonth()) % columns == 0) {
+                    keyboard.add(new ArrayList<>());
+                }
+                keyboard.get(keyboard.size() - 1).add(button);
+            }
+        }
+
+        markup.setKeyboard(keyboard);
+        return markup;
     }
 }
