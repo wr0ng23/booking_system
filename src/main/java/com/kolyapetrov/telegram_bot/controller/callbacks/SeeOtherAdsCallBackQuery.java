@@ -52,7 +52,7 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
         }
     }
 
-    void getOrderPhotosQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
+    private void getOrderPhotosQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
 
         var photos = order.getPhotos();
@@ -65,7 +65,7 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
         }
     }
 
-    private void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
+    void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         List<Order> orders = getUserOrders(callBackInfo.getCity());
 
         int indexOfCurrentOrder = OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder());

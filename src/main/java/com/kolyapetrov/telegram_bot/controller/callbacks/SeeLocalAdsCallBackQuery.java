@@ -59,7 +59,7 @@ public class SeeLocalAdsCallBackQuery implements CallBackHandler {
         }
     }
 
-    private void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender)
+    void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender)
             throws TelegramApiException{
 
         String city = locationService.requestInfoAboutLocationByCords(callBackInfo.getLatitude(), callBackInfo.getLongitude());
