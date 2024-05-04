@@ -11,4 +11,5 @@ public interface OrderService {
     Order getOrder(Long id);
     void deleteOrder(Order order);
     List<Order> findOrdersByCity(String city);
+    Order findOrderById(Long id);
 }

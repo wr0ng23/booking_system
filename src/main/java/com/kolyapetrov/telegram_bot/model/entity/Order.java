@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -43,6 +44,9 @@ Order {
 
     @Column(name = "latitude")
     private Double latitude;
+
+    @OneToMany(mappedBy = "order")
+    Set<Booking> bookings;
 
     @Override
     public String toString() {
