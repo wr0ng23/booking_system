@@ -14,9 +14,14 @@ public class ConstantMessages {
     public static final String RIGHT_AD = "▶\uFE0F";
     public static final String EDIT_AD = "Изменить";
     public static final String SEE_PHOTOS_AD = "Фотографии";
+    public static final String BOOKING = "Бронирование";
+    public static final String BOOKING_PRIVATE = "b";
     public static final String DELETE_AD = "Удалить";
-    public static final String MY_ADS = "myads";
-    public static final String OTHER_ADS = "otherads";
-    public static final String LOCAL_ADS = "localads";
-    public static final String GO_BACK = "Вернуться назад";
+    public static final String MY_ADS = "ma";
+    public static final String OTHER_ADS = "oa";
+    public static final String LOCAL_ADS = "ld";
+    public static final String SELECT_DATE = "sd";
+    public static final String GO_BACK = "Назад";
+    public static final String ACCEPT_BOOKING = "ab";
+    public static final String BACK_FROM_DATE_CHOOSE = "bc";
 }

@@ -13,4 +13,5 @@ public class CallBackInfo {
     private Double longitude;
     private Double latitude;
     private String nameOfButton;
+    private String selectedDate;
 }
