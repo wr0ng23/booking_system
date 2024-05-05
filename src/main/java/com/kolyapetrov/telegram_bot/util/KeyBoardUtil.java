@@ -201,7 +201,8 @@ public class KeyBoardUtil {
         return button;
     }
 
-    public static InlineKeyboardMarkup getKeyboardForDates(Long numberOfOrder, List<LocalDate> alreadyBooked) {
+    public static InlineKeyboardMarkup getKeyboardForDates(Long numberOfOrder, List<LocalDate> alreadyBooked,
+                                                           LocalDate startBooking, LocalDate endBooking) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         LocalDate currentDate = LocalDate.now();
@@ -209,6 +210,7 @@ public class KeyBoardUtil {
 
         int daysInMonth = currentDate.lengthOfMonth();
         int columns = 3;
+        keyboard.add(new ArrayList<>());
 
         for (int day = currentDate.getDayOfMonth(); day <= daysInMonth; day++) {
             LocalDate date = currentDate.withDayOfMonth(day);
@@ -216,22 +218,32 @@ public class KeyBoardUtil {
                 String buttonText = date.format(formatter);
                 String callbackData = SELECT_DATE + " " + date + " " + numberOfOrder;
                 InlineKeyboardButton button = InlineKeyboardButton.builder()
-                        .text("⬜ " + buttonText)
+                        .text(buttonText)
                         .callbackData(callbackData)
                         .build();
 
-            /*if (date.equals(selectedDate)) {
-                button.setText("🔳 " + buttonText);
-                button.setCallbackData("SELECTED_DATE_" + date);
-            }*/
-
-                if ((day - currentDate.getDayOfMonth()) % columns == 0) {
-                    keyboard.add(new ArrayList<>());
+                if (date.equals(startBooking)) {
+                    button.setText("🟢" + buttonText);
                 }
+
+                if (date.equals(endBooking)) {
+                    button.setText(button.getText() + "🔴");
+                }
+
                 keyboard.get(keyboard.size() - 1).add(button);
             }
-        }
 
+            if (keyboard.get(keyboard.size() - 1).size() == columns) {
+                keyboard.add(new ArrayList<>());
+            }
+        }
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        InlineKeyboardButton button = InlineKeyboardButton.builder()
+                .text(ACCEPT_BOOKING)
+                .callbackData(ACCEPT_BOOKING_PRIVATE + " " + numberOfOrder)
+                .build();
+        inlineKeyboardButtons.add(button);
+        keyboard.add(inlineKeyboardButtons);
         markup.setKeyboard(keyboard);
         return markup;
     }

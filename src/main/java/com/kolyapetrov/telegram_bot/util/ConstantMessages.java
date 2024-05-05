@@ -22,6 +22,7 @@ public class ConstantMessages {
     public static final String LOCAL_ADS = "ld";
     public static final String SELECT_DATE = "sd";
     public static final String GO_BACK = "Назад";
-    public static final String ACCEPT_BOOKING = "ab";
+    public static final String ACCEPT_BOOKING_PRIVATE = "ab";
+    public static final String ACCEPT_BOOKING = "Подтвердить бронирование ✅";
     public static final String BACK_FROM_DATE_CHOOSE = "bc";
 }

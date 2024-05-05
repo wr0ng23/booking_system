@@ -30,6 +30,7 @@ public class BookingButtonPressedCallBackQuery implements CallBackHandler {
     public void handle(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         var bookedDates = bookingService.findDatesBetweenStartAndEndForOrder(callBackInfo.getNumberOfOrder());
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates)));
+                KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates,
+                        null, null)));
     }
 }
