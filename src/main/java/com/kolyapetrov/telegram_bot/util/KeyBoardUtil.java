@@ -224,10 +224,12 @@ public class KeyBoardUtil {
 
                 if (date.equals(startBooking)) {
                     button.setText("🟢" + buttonText);
+                    button.setCallbackData(ALREADY_SELECTED + " " + date + " " + numberOfOrder);
                 }
 
                 if (date.equals(endBooking)) {
                     button.setText(button.getText() + "🔴");
+                    button.setCallbackData(ALREADY_SELECTED + " " + date + " " + numberOfOrder);
                 }
 
                 keyboard.get(keyboard.size() - 1).add(button);
@@ -242,6 +244,7 @@ public class KeyBoardUtil {
                 .text(ACCEPT_BOOKING)
                 .callbackData(ACCEPT_BOOKING_PRIVATE + " " + numberOfOrder)
                 .build();
+
         inlineKeyboardButtons.add(button);
         keyboard.add(inlineKeyboardButtons);
         markup.setKeyboard(keyboard);

@@ -35,6 +35,7 @@ public class AcceptBookingCallBackQuery implements CallBackHandler {
     public void handle(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
         Long userId = userInfo.getAppUser().getUserId();
         Long orderId = callBackInfo.getNumberOfOrder();
+
         tempTableManager.createTempTable();
         var tempBookingRecordId = tempTableManager.getRecordId(userId, orderId);
         BookingTemp bookingTemp = tempTableManager.getRecordById(tempBookingRecordId);

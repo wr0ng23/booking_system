@@ -21,6 +21,7 @@ public class ConstantMessages {
     public static final String OTHER_ADS = "oa";
     public static final String LOCAL_ADS = "ld";
     public static final String SELECT_DATE = "sd";
+    public static final String ALREADY_SELECTED = "asd";
     public static final String GO_BACK = "Назад";
     public static final String ACCEPT_BOOKING_PRIVATE = "ab";
     public static final String ACCEPT_BOOKING = "Подтвердить бронирование ✅";
