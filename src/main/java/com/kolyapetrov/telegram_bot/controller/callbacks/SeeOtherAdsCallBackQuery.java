@@ -66,7 +66,7 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
     }
 
     void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
-        List<Order> orders = getUserOrders(callBackInfo.getCity());
+        List<Order> orders = getUserOrders(callBackInfo.getCity(), userInfo.getAppUser().getUserId());
 
         int indexOfCurrentOrder = OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder());
         Order newCurrentOrder = orders.get(indexOfCurrentOrder);
@@ -78,13 +78,13 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
 
         InlineKeyboardMarkup keyboard = KeyBoardUtil.seeOtherADsKeyboard(leftNewOrder.getId(),
                 newCurrentOrder.getId(), rightNewOrder.getId(), callBackInfo.getCity());
-        String userName = "@" + orderService.findUserNameByOrderId(newCurrentOrder.getId());
+
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                newMainPhotoId, newCurrentOrder+ "\n\nАвтор объявления: " + userName, keyboard));
+                newMainPhotoId, newCurrentOrder.toString(), keyboard));
     }
 
-    private List<Order> getUserOrders(String city) {
-        return orderService.findOrdersByCity(city)
+    private List<Order> getUserOrders(String city, Long userId) {
+        return orderService.findByCityAndUserIdNot(city, userId)
                 .stream()
                 .sorted(Comparator.comparing(Order::getId))
                 .toList();

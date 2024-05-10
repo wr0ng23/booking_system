@@ -10,7 +10,8 @@ public interface OrderService {
     String findUserNameByOrderId(Long id);
     Order getOrder(Long id);
     void deleteOrder(Order order);
-    List<Order> findOrdersByCity(String city);
+    List<Order> findByCityAndUserIdNot(String city, Long userId);
     Order findOrderById(Long id);
     Long findUserIdByOrderId(Long id);
+    List<Order> findOrdersByCheckedIsNot();
 }

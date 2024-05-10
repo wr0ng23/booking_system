@@ -64,7 +64,7 @@ public class SeeMyAdsCallBackQuery implements CallBackHandler {
         userInfo.getAppUser().setUserState(UserState.EDIT_AD);
         var orders = getUserOrders(userInfo.getAppUser());
         var order = orders.get(OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder()));
-        order.setIsEditing(true);
+        order.setEditing(true);
         userService.saveUser(userInfo.getAppUser());
         sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Введите новое описание для объявления: "));
     }

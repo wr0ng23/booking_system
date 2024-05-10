@@ -12,11 +12,11 @@ public class ConstantMessages {
     public static final String SEND_LOCATION = "Отправить геопозицию";
     public static final String LEFT_AD = "◀\uFE0F";
     public static final String RIGHT_AD = "▶\uFE0F";
-    public static final String EDIT_AD = "Изменить";
-    public static final String SEE_PHOTOS_AD = "Фотографии";
+    public static final String EDIT_AD = "\uD83D\uDCDD";
+    public static final String SEE_PHOTOS_AD = "\uD83D\uDDBC\uFE0F\uD83D\uDC40";
     public static final String BOOKING = "Бронирование";
     public static final String BOOKING_PRIVATE = "b";
-    public static final String DELETE_AD = "Удалить";
+    public static final String DELETE_AD = "\uD83D\uDDD1\uFE0F❌";
     public static final String MY_ADS = "ma";
     public static final String OTHER_ADS = "oa";
     public static final String LOCAL_ADS = "ld";
@@ -27,4 +27,5 @@ public class ConstantMessages {
     public static final String ACCEPT_BOOKING_PRIVATE = "ab";
     public static final String ACCEPT_BOOKING = "Подтвердить бронирование ✅";
     public static final String BACK_FROM_DATE_CHOOSE = "bc";
+    public static final String ADMIN_COMMAND = "/admin";
 }

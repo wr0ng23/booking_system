@@ -59,7 +59,7 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
             System.out.println("My lat: " + location.getLatitude());
             System.out.println("My lon: " + location.getLongitude());
             String city = locationService.requestInfoAboutLocationByCords(location.getLatitude(), location.getLongitude());
-            List<Order> orders = orderService.findOrdersByCity(city);
+            List<Order> orders = orderService.findByCityAndUserIdNot(city, appUser.getUserId());
 
             orders.sort(Comparator.comparingDouble(myOrder ->
                     locationService.distBetweenPoints(myOrder.getLatitude(), myOrder.getLongitude(), location.getLatitude(),
@@ -93,7 +93,7 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
         } else if (update.getMessage().hasText()) {
             String city = update.getMessage().getText();
             String capitalizedCity = (Character.toUpperCase(city.charAt(0)) + city.substring(1));
-            List<Order> orders = orderService.findOrdersByCity(capitalizedCity);
+            List<Order> orders = orderService.findByCityAndUserIdNot(capitalizedCity, appUser.getUserId());
 
             if (orders.isEmpty()) {
                 sender.execute(MessageUtil.getMessage(chatId, "В выбранном городе объявлений не найдено!"));

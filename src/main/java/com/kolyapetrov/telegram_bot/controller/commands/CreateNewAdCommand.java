@@ -25,11 +25,13 @@ public class CreateNewAdCommand implements CommandHandler {
         AppUser appUser = userService.getUser(update.getMessage().getFrom());
         String chatId = update.getMessage().getChatId().toString();
 
-        sender.execute(MessageUtil.getMessage(chatId, "Для создания объявления отправьте фотографии " +
+        /*sender.execute(MessageUtil.getMessage(chatId, "Для создания объявления отправьте фотографии " +
                 "вашего жилья. Когда отправите нужное количество - нажмите кнопку снизу. " +
                 "Первая отправленная фотография будет главной в объявлении. Максимальное количество фотографий - 10.",
-                KeyBoardUtil.finishPhotoSending()));
-        appUser.setUserState(UserState.ENTER_PHOTOS);
+                KeyBoardUtil.finishPhotoSending()));*/
+        sender.execute(MessageUtil.getMessage(chatId, "Введите название объявления, " +
+                "которое увидят другие пользователи:"));
+        appUser.setUserState(UserState.ENTER_TITLE_OF_AD);
         userService.saveUser(appUser);
     }
 

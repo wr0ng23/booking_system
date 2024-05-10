@@ -16,11 +16,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.Comparator;
 
 @Component
-public class EnterPrice implements ActionHandler {
+public class EnterPriceAction implements ActionHandler {
     private final UserService userService;
 
     @Autowired
-    public EnterPrice(UserService userService) {
+    public EnterPriceAction(UserService userService) {
         this.userService = userService;
     }
 

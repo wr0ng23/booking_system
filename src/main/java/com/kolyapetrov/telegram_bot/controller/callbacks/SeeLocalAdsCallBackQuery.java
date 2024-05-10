@@ -63,7 +63,7 @@ public class SeeLocalAdsCallBackQuery implements CallBackHandler {
             throws TelegramApiException{
 
         String city = locationService.requestInfoAboutLocationByCords(callBackInfo.getLatitude(), callBackInfo.getLongitude());
-        List<Order> orders = orderService.findOrdersByCity(city);
+        List<Order> orders = orderService.findByCityAndUserIdNot(city, userInfo.getAppUser().getUserId());
 
         orders.sort(Comparator.comparingDouble(myOrder -> locationService.distBetweenPoints(myOrder.getLatitude(),
                 myOrder.getLongitude(), callBackInfo.getLatitude(), callBackInfo.getLongitude())));

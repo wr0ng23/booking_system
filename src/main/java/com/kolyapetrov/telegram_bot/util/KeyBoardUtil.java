@@ -20,7 +20,8 @@ public class KeyBoardUtil {
     public static ReplyKeyboardMarkup finishPhotoSending() {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setResizeKeyboard(true);
-//        keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setIsPersistent(false);
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row1 = new KeyboardRow();
         KeyboardButton button = new KeyboardButton(FINISH_SENDING_PHOTOS);

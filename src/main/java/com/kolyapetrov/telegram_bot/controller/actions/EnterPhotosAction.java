@@ -56,10 +56,9 @@ public class EnterPhotosAction implements ActionHandler {
                 sender.execute(MessageUtil.getMessage(chatId, "Вам необходимо отправить минмум 1 фото!"));
                 return;
             }
-            appUser.setUserState(UserState.ENTER_DESCRIPTION_OF_AD);
+            appUser.setUserState(UserState.ENTER_ADDRESS);
             userService.saveUser(appUser);
-            sender.execute(MessageUtil.getMessage(chatId, "Теперь отправьте описание, " +
-                    "которое будут видеть люди просматривающие ваше объявление"));
+            sender.execute(MessageUtil.getMessage(chatId, "Теперь введите город, вашего объявления: "));
         } else {
             sender.execute(MessageUtil.getMessage(chatId, "Отправьте фото вашего жилья и " +
                     "нажмите кнопку снизу, чтобы перейти дальше", KeyBoardUtil.finishPhotoSending()));
@@ -67,29 +66,12 @@ public class EnterPhotosAction implements ActionHandler {
     }
 
     private Order getLastOrder(AppUser appUser) {
-        long sizeOfOrders = appUser.getOrders().size();
-        Order lastOrder;
+        var orders = appUser.getOrders()
+                .stream()
+                .sorted(Comparator.comparing(Order::getId))
+                .toList();
 
-        // Getting last order if it exists or creating a new order
-        if (sizeOfOrders != 0) {
-            var orders = appUser.getOrders()
-                    .stream()
-                    .sorted(Comparator.comparing(Order::getId))
-                    .toList();
-            lastOrder = orders.get((int) (sizeOfOrders - 1));
-        } else {
-            lastOrder = new Order();
-            lastOrder.setPhotos(new ArrayList<>());
-            lastOrder.setIsEditing(false);
-        }
-
-        // checking if order was already created
-        if (lastOrder.getDescription() != null) {
-            lastOrder = new Order();
-            lastOrder.setPhotos(new ArrayList<>());
-            lastOrder.setIsEditing(false);
-        }
-        return lastOrder;
+        return orders.get(orders.size() - 1);
     }
 
     @Override

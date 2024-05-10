@@ -7,5 +7,6 @@ public enum UserState {
     ENTER_PRICE,
     ENTER_ADDRESS,
     EDIT_AD,
-    SEARCH_FOR_ADS
+    SEARCH_FOR_ADS,
+    ENTER_TITLE_OF_AD
 }

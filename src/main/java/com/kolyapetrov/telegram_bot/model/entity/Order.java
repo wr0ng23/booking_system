@@ -20,6 +20,9 @@ Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "description")
     private String description;
 
@@ -28,7 +31,7 @@ Order {
     private List<PhotoOfOrder> photos;
 
     @Column(name = "is_editing")
-    private Boolean isEditing;
+    private boolean isEditing;
 
     @Column(name = "price")
     private Long price;
@@ -48,11 +51,20 @@ Order {
     @OneToMany(mappedBy = "order")
     Set<Booking> bookings;
 
+    @Column(name = "is_checked")
+    private boolean isChecked;
+
+    @ManyToOne
+    @JoinColumn(name = "id_of_user")
+    private AppUser user;
+
     @Override
     public String toString() {
-        return "<b>Описание:</b>\n" + getDescription() + "\n\n" +
-                "<b>Цена:</b> " + getPrice() + " руб." + "\n" +
+        return "<b>Название:</b>\n" + getTitle() + "\n\n" +
+                "<b>Описание:</b>\n" + getDescription() + "\n\n" +
                 "<b>Город:</b> " + getCity() + "\n" +
-                "<b>Адрес:</b> " + getAddress();
+                "<b>Адрес:</b> " + getAddress() + "\n\n" +
+                "<b>Цена:</b> " + getPrice() + " руб." + "\n\n" +
+                "<b>Автор объявления:</b> @" + user.getNameOfUser();
     }
 }

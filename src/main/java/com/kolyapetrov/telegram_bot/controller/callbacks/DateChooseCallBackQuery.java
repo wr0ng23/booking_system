@@ -55,7 +55,7 @@ public class DateChooseCallBackQuery implements CallBackHandler {
                 bookingService.findFreeDatesForBookingByOrderId(orderId))) {
 
             sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Извините, данный период " +
-                    "недоступен для бронирования, поскольку жилье уже забронировано на выбранные даты."));
+                    "недоступен для бронирования, поскольку жилье уже забронировано на даты между выбранными вами."));
             return;
         }
 

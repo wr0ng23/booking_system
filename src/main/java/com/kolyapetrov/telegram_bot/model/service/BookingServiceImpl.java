@@ -29,12 +29,12 @@ public class BookingServiceImpl implements BookingService {
     public List<LocalDate> findBookedDatesByOrderId(Long orderId) {
         List<Booking> bookings = bookingRepository.findByOrder_Id(orderId);
 
-        HashSet<LocalDate> bookedDates = new HashSet<>();
-        HashMap<LocalDate, Integer> bookedDatesMap = new HashMap<>();
+        Set<LocalDate> bookedDates = new HashSet<>();
+//        Map<LocalDate, Integer> bookedDatesMap = new HashMap<>();
 
         for (Booking booking : bookings) {
-            LocalDate startDate = booking.getDateStart().plusDays(1);
-            LocalDate endDate = booking.getDateEnd().minusDays(1);
+            LocalDate startDate = booking.getDateStart();
+            LocalDate endDate = booking.getDateEnd();
             if (endDate.isBefore(LocalDate.now())) continue;
             LocalDate currentDate = startDate;
             while (!currentDate.isAfter(endDate)) {
@@ -42,7 +42,7 @@ public class BookingServiceImpl implements BookingService {
                 currentDate = currentDate.plusDays(1);
             }
 
-            startDate = booking.getDateStart();
+            /*startDate = booking.getDateStart();
             endDate = booking.getDateEnd();
             if (endDate.isBefore(LocalDate.now())) continue;
             currentDate = startDate;
@@ -53,13 +53,13 @@ public class BookingServiceImpl implements BookingService {
                     bookedDatesMap.put(currentDate, 1);
                 }
                 currentDate = currentDate.plusDays(1);
-            }
+            }*/
         }
 
-        var someDates = bookedDatesMap.entrySet().stream()
+        /*var someDates = bookedDatesMap.entrySet().stream()
                 .filter(predicate -> predicate.getValue().equals(2) || predicate.getKey().equals(LocalDate.now()))
                 .map(Map.Entry::getKey).toList();
-        bookedDates.addAll(someDates);
+        bookedDates.addAll(someDates);*/
 
         return bookedDates.stream().toList();
     }

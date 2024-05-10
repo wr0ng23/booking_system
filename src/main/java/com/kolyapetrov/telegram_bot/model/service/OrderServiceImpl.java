@@ -22,8 +22,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findOrdersByCity(String city) {
-        return orderRepository.findByCity(city);
+    public List<Order> findByCityAndUserIdNot(String city, Long userId) {
+        return orderRepository.findByCityAndUserIdNot(city, userId);
     }
 
     @Override
@@ -49,5 +49,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order findOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<Order> findOrdersByCheckedIsNot() {
+        return orderRepository.findByIsCheckedIsFalse();
     }
 }
