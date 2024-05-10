@@ -1,5 +1,6 @@
 package com.kolyapetrov.telegram_bot.util;
 
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -38,6 +39,14 @@ public class MessageUtil {
 
     public static SendMessage getMessage(String chatId, String message) {
         return getSomeMessage(chatId, message);
+    }
+
+    public static AnswerCallbackQuery getAnswerCallbackQuery(String id, String text) {
+        return AnswerCallbackQuery.builder()
+                .text(text)
+                .showAlert(true)
+                .callbackQueryId(id)
+                .build();
     }
 
     public static SendPhoto getMessage(String chatId, File photo) {

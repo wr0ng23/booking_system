@@ -11,7 +11,6 @@ import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class DateChooseCallBackQuery implements CallBackHandler {
 
     @Override
     public void handle(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
-        var bookedDates = bookingService.findDatesBetweenStartAndEndForOrder(callBackInfo.getNumberOfOrder());
+        var bookedDates = bookingService.findBookedDatesByOrderId(callBackInfo.getNumberOfOrder());
         Long userId = userInfo.getAppUser().getUserId();
         Long orderId = callBackInfo.getNumberOfOrder();
         String selectedDate = callBackInfo.getSelectedDate();
@@ -47,9 +46,16 @@ public class DateChooseCallBackQuery implements CallBackHandler {
             startBooking = bookingTemp.getStartDate();
             endBooking = bookingTemp.getEndDate();
         }
-        if (!checkDatesCorrectness(startBooking, endBooking, LocalDate.parse(selectedDate)) ||
-                !checkPeriod(startBooking, endBooking, LocalDate.parse(selectedDate), bookedDates)) {
-            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Вы не можете выбрать такие даты!"));
+        if (!checkDatesCorrectness(startBooking, endBooking, LocalDate.parse(selectedDate))) {
+            sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Вы не можете выбрать такие даты!"));
+            return;
+        }
+
+        if (!checkPeriod(startBooking, endBooking, LocalDate.parse(selectedDate),
+                bookingService.findFreeDatesForBookingByOrderId(orderId))) {
+
+            sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Извините, данный период " +
+                    "недоступен для бронирования, поскольку жилье уже забронировано на выбранные даты."));
             return;
         }
 
@@ -69,23 +75,9 @@ public class DateChooseCallBackQuery implements CallBackHandler {
                     KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates, startBooking,
                             LocalDate.parse(selectedDate))));
         } else {
-            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Для того чтобы выбрать новые даты, " +
+            sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Для того чтобы выбрать новые даты, " +
                     "уберите флажки со старых!"));
         }
-    }
-
-    private List<LocalDate> getFreeDates(List<LocalDate> bookedDates) {
-        LocalDate currentDate = LocalDate.now();
-        int daysInMonth = currentDate.lengthOfMonth();
-        List<LocalDate> freeDates = new ArrayList<>();
-
-        for (int day = currentDate.getDayOfMonth(); day <= daysInMonth; day++) {
-            LocalDate date = currentDate.withDayOfMonth(day);
-            if (!bookedDates.contains(date)) {
-                freeDates.add(date);
-            }
-        }
-        return freeDates;
     }
 
     private boolean checkDatesCorrectness(LocalDate startDate, LocalDate endDate, LocalDate selectedDate) {
@@ -97,15 +89,15 @@ public class DateChooseCallBackQuery implements CallBackHandler {
         } else return true;
     }
 
-    private boolean checkPeriod(LocalDate startDate, LocalDate endDate, LocalDate selectedDate, List<LocalDate> bookedDates) {
+    private boolean checkPeriod(LocalDate startDate, LocalDate endDate, LocalDate selectedDate, List<LocalDate> freeDates) {
         if (startDate == null && endDate == null) return true;
         if (startDate == null) {
             startDate = selectedDate;
         } else if (endDate == null) {
             endDate = selectedDate;
         }
-        var list = getFreeDates(bookedDates);
+
         var days = startDate.datesUntil(endDate).toList();
-        return new HashSet<>(list).containsAll(days);
+        return new HashSet<>(freeDates).containsAll(days);
     }
 }

@@ -12,4 +12,5 @@ public interface OrderService {
     void deleteOrder(Order order);
     List<Order> findOrdersByCity(String city);
     Order findOrderById(Long id);
+    Long findUserIdByOrderId(Long id);
 }

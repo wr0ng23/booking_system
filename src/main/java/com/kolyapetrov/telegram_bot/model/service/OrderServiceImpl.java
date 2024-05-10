@@ -42,6 +42,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Long findUserIdByOrderId(Long id) {
+        return orderRepository.findUserIdByOrderId(id);
+    }
+
+    @Override
     public Order findOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }

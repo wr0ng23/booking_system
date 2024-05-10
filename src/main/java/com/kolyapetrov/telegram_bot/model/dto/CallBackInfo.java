@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CallBackInfo {
+    private String id;
     private Long numberOfOrder;
     private String city;
     private Double longitude;

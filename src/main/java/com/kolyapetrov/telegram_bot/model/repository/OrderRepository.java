@@ -14,4 +14,10 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
             "where o.id = ?1",
             nativeQuery = true)
     String findNameOfUserByOrderId(Long id);
+
+    @Query(value = "select u.id " +
+            "from users u join orders o on u.id = o.id_of_user " +
+            "where o.id = ?1",
+            nativeQuery = true)
+    Long findUserIdByOrderId(Long id);
 }

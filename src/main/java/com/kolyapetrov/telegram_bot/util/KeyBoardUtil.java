@@ -201,40 +201,48 @@ public class KeyBoardUtil {
         return button;
     }
 
-    public static InlineKeyboardMarkup getKeyboardForDates(Long numberOfOrder, List<LocalDate> alreadyBooked,
+    public static InlineKeyboardMarkup getKeyboardForDates(Long numberOfOrder, List<LocalDate> bookedDates,
                                                            LocalDate startBooking, LocalDate endBooking) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now();
+        keyboard.add(new ArrayList<>());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
 
-        int daysInMonth = currentDate.lengthOfMonth();
         int columns = 3;
-        keyboard.add(new ArrayList<>());
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1)
+                .plusMonths(1)
+                .minusDays(1);
 
-        for (int day = currentDate.getDayOfMonth(); day <= daysInMonth; day++) {
-            LocalDate date = currentDate.withDayOfMonth(day);
-            if (!alreadyBooked.contains(date)) {
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            InlineKeyboardButton button;
+            if (!bookedDates.contains(date)) {
                 String buttonText = date.format(formatter);
                 String callbackData = SELECT_DATE + " " + date + " " + numberOfOrder;
-                InlineKeyboardButton button = InlineKeyboardButton.builder()
+                button = InlineKeyboardButton.builder()
                         .text(buttonText)
                         .callbackData(callbackData)
                         .build();
 
                 if (date.equals(startBooking)) {
-                    button.setText("🟢" + buttonText);
+                    button.setText("\uD83D\uDCC5 " + buttonText);
                     button.setCallbackData(ALREADY_SELECTED + " " + date + " " + numberOfOrder);
                 }
 
                 if (date.equals(endBooking)) {
-                    button.setText(button.getText() + "🔴");
+                    button.setText(button.getText() + " \uD83C\uDFC1");
                     button.setCallbackData(ALREADY_SELECTED + " " + date + " " + numberOfOrder);
                 }
 
-                keyboard.get(keyboard.size() - 1).add(button);
+            } else {
+                String callbackData = ALREADY_BOOKED + " " + date + " " + numberOfOrder;
+                button = InlineKeyboardButton.builder()
+                        .text("\uD83D\uDD12" + date.format(formatter))
+                        .callbackData(callbackData)
+                        .build();
             }
 
+            keyboard.get(keyboard.size() - 1).add(button);
             if (keyboard.get(keyboard.size() - 1).size() == columns) {
                 keyboard.add(new ArrayList<>());
             }

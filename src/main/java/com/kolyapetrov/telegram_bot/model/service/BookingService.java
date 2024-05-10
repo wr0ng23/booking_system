@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingService {
-    List<LocalDate> findDatesBetweenStartAndEndForOrder(Long orderId);
+    List<LocalDate> findFreeDatesForBookingByOrderId(Long orderId);
     void insertNewRecord(BookingTemp bookingTemp);
+    List<LocalDate> findBookedDatesByOrderId(Long orderId);
 }

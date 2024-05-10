@@ -117,8 +117,9 @@ public class BookingBot extends TelegramLongPollingBot {
 
         CallBackHandler callBackHandler = callbackQueriesHandler.retrieveCallBack(callBackName);
         if (callBackHandler != null) {
-
-            callBackHandler.handle(getUserInfo(update), getCallBackInfo(dataFromCallBack), this);
+            var callback = getCallBackInfo(dataFromCallBack);
+            callback.setId(update.getCallbackQuery().getId());
+            callBackHandler.handle(getUserInfo(update), callback, this);
             return true;
         } else return false;
     }
@@ -151,7 +152,7 @@ public class BookingBot extends TelegramLongPollingBot {
             case OTHER_ADS -> callBackInfo.setCity(callBackParts[3]);
             case BOOKING_PRIVATE -> callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
             case ACCEPT_BOOKING_PRIVATE -> callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[1]));
-            case SELECT_DATE, ALREADY_SELECTED -> {
+            case SELECT_DATE, ALREADY_SELECTED, ALREADY_BOOKED -> {
                 callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
                 callBackInfo.setSelectedDate(callBackParts[1]);
             }

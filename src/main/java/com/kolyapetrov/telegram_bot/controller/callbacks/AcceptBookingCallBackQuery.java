@@ -3,7 +3,10 @@ package com.kolyapetrov.telegram_bot.controller.callbacks;
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
+import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
+import com.kolyapetrov.telegram_bot.model.service.OrderService;
+import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.BookingTemp;
 import com.kolyapetrov.telegram_bot.util.CallBackName;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
@@ -14,16 +17,20 @@ import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalDate;
+
 @Component
 public class AcceptBookingCallBackQuery implements CallBackHandler {
     private final BookingService bookingService;
     private final TempTableManager tempTableManager;
-
+    private final OrderService orderService;
 
     @Autowired
-    public AcceptBookingCallBackQuery(BookingService bookingService, TempTableManager tempTableManager) {
+    public AcceptBookingCallBackQuery(BookingService bookingService, TempTableManager tempTableManager,
+                                      OrderService orderService) {
         this.bookingService = bookingService;
         this.tempTableManager = tempTableManager;
+        this.orderService = orderService;
     }
 
     @Override
@@ -52,7 +59,16 @@ public class AcceptBookingCallBackQuery implements CallBackHandler {
         sender.execute(deleteMessage);
 
         //TODO: more details about booking needed
+        String username = orderService.findUserNameByOrderId(orderId);
         sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Объявление забронировано, " +
-                "вы можете связаться с арендодателем для уточнения деталей!"));
+                "вы можете связаться с арендодателем для уточнения деталей!\n tg арендодателя: @" + username));
+
+        String landLordId = orderService.findUserIdByOrderId(orderId).toString();
+        LocalDate startDate = bookingTemp.getStartDate();
+        LocalDate endDate = bookingTemp.getEndDate();
+        long price = orderService.findOrderById(orderId).getPrice() * startDate.datesUntil(endDate).toList().size();
+
+        sender.execute(MessageUtil.getMessage(landLordId, "Пользователь: @" + userInfo.getAppUser().getNameOfUser()
+                + " забронировал у вас жилье на период с " + startDate + " до " + endDate + " на итоговую сумму: " + price));
     }
 }

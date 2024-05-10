@@ -42,7 +42,7 @@ public class BookingButtonPressedCallBackQuery implements CallBackHandler {
             endBooking = bookingRecord.getEndDate();
         }
 
-        var bookedDates = bookingService.findDatesBetweenStartAndEndForOrder(callBackInfo.getNumberOfOrder());
+        var bookedDates = bookingService.findBookedDatesByOrderId(callBackInfo.getNumberOfOrder());
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                 KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates,
                         startBooking, endBooking)));
