@@ -4,7 +4,7 @@ import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
-import com.kolyapetrov.telegram_bot.util.CallBackName;
+import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import com.kolyapetrov.telegram_bot.util.TempTableManager;

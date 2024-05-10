@@ -1,6 +1,7 @@
 package com.kolyapetrov.telegram_bot.model.service;
 
 import com.kolyapetrov.telegram_bot.model.entity.Order;
+import com.kolyapetrov.telegram_bot.util.enums.OrderState;
 
 import java.util.List;
 
@@ -13,5 +14,6 @@ public interface OrderService {
     List<Order> findByCityAndUserIdNot(String city, Long userId);
     Order findOrderById(Long id);
     Long findUserIdByOrderId(Long id);
-    List<Order> findOrdersByCheckedIsNot();
+    List<Order> findByState(OrderState state);
+    void deleteOrderByOrderId(Long orderId);
 }

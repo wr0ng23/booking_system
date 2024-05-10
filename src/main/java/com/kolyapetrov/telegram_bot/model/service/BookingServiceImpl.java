@@ -4,7 +4,7 @@ import com.kolyapetrov.telegram_bot.model.entity.Booking;
 import com.kolyapetrov.telegram_bot.model.repository.BookingRepository;
 import com.kolyapetrov.telegram_bot.model.repository.OrderRepository;
 import com.kolyapetrov.telegram_bot.model.repository.UserRepository;
-import com.kolyapetrov.telegram_bot.util.BookingTemp;
+import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

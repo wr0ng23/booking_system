@@ -4,7 +4,7 @@ import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;

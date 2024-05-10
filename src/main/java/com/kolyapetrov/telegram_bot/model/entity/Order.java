@@ -1,5 +1,6 @@
 package com.kolyapetrov.telegram_bot.model.entity;
 
+import com.kolyapetrov.telegram_bot.util.enums.OrderState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,8 +52,9 @@ Order {
     @OneToMany(mappedBy = "order")
     Set<Booking> bookings;
 
-    @Column(name = "is_checked")
-    private boolean isChecked;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_state")
+    private OrderState state;
 
     @ManyToOne
     @JoinColumn(name = "id_of_user")

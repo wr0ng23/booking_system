@@ -2,6 +2,8 @@ package com.kolyapetrov.telegram_bot.model.service;
 
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.repository.OrderRepository;
+import com.kolyapetrov.telegram_bot.util.enums.OrderState;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> findByCityAndUserIdNot(String city, Long userId) {
-        return orderRepository.findByCityAndUserIdNot(city, userId);
+        return orderRepository.findByCityAndUserIdNot(city, userId, OrderState.CHECKED);
     }
 
     @Override
@@ -40,6 +42,11 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(Order order) {
         orderRepository.delete(order);
     }
+    @Override
+    public void deleteOrderByOrderId(Long orderId) {
+        Order order = orderRepository.findById(orderId).get();
+        orderRepository.delete(order);
+    }
 
     @Override
     public Long findUserIdByOrderId(Long id) {
@@ -52,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findOrdersByCheckedIsNot() {
-        return orderRepository.findByIsCheckedIsFalse();
+    public List<Order> findByState(OrderState state) {
+        return orderRepository.findByState(state);
     }
 }

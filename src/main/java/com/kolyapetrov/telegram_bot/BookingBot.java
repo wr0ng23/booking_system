@@ -11,14 +11,12 @@ import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.CallBackName;
-import com.kolyapetrov.telegram_bot.util.Command;
-import com.kolyapetrov.telegram_bot.util.ConstantMessages;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
+import com.kolyapetrov.telegram_bot.util.enums.Command;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -142,7 +140,7 @@ public class BookingBot extends TelegramLongPollingBot {
         CallBackInfo callBackInfo =  CallBackInfo.builder().build();
 
         switch (callBackParts[0]) {
-            case OTHER_ADS, LOCAL_ADS, MY_ADS -> {
+            case OTHER_ADS, LOCAL_ADS, MY_ADS, ADMIN_ADS -> {
                 callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
                 callBackInfo.setNameOfButton(callBackParts[1]);
             }

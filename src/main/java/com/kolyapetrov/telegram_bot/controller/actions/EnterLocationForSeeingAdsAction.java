@@ -10,7 +10,7 @@ import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import com.kolyapetrov.telegram_bot.util.OrderUtil;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -22,8 +22,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.kolyapetrov.telegram_bot.util.ConstantMessages.GO_BACK;
-import static com.kolyapetrov.telegram_bot.util.UserState.MAIN;
-import static com.kolyapetrov.telegram_bot.util.UserState.SEARCH_FOR_ADS;
+import static com.kolyapetrov.telegram_bot.util.enums.UserState.MAIN;
+import static com.kolyapetrov.telegram_bot.util.enums.UserState.SEARCH_FOR_ADS;
 
 @Component
 public class EnterLocationForSeeingAdsAction implements ActionHandler {

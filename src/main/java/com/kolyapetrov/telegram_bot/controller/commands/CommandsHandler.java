@@ -1,7 +1,7 @@
 package com.kolyapetrov.telegram_bot.controller.commands;
 
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
-import com.kolyapetrov.telegram_bot.util.Command;
+import com.kolyapetrov.telegram_bot.util.enums.Command;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

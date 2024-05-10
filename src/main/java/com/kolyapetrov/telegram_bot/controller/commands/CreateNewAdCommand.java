@@ -2,10 +2,9 @@ package com.kolyapetrov.telegram_bot.controller.commands;
 
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.Command;
-import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
+import com.kolyapetrov.telegram_bot.util.enums.Command;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;

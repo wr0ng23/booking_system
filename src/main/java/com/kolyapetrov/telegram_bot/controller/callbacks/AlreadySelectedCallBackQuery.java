@@ -5,6 +5,8 @@ import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
 import com.kolyapetrov.telegram_bot.util.*;
+import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
+import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;

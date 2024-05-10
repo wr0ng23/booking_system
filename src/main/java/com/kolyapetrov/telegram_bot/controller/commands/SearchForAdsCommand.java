@@ -3,7 +3,7 @@ package com.kolyapetrov.telegram_bot.controller.commands;
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
-import com.kolyapetrov.telegram_bot.util.Command;
+import com.kolyapetrov.telegram_bot.util.enums.Command;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import static com.kolyapetrov.telegram_bot.util.UserState.SEARCH_FOR_ADS;
+import static com.kolyapetrov.telegram_bot.util.enums.UserState.SEARCH_FOR_ADS;
 
 @Component
 public class SearchForAdsCommand implements CommandHandler {

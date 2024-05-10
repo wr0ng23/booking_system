@@ -1,7 +1,7 @@
 package com.kolyapetrov.telegram_bot.controller.actions;
 
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import org.springframework.stereotype.Component;

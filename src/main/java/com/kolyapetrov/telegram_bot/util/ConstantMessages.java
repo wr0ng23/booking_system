@@ -17,6 +17,7 @@ public class ConstantMessages {
     public static final String BOOKING = "Бронирование";
     public static final String BOOKING_PRIVATE = "b";
     public static final String DELETE_AD = "\uD83D\uDDD1\uFE0F❌";
+    public static final String ACCEPT_AD = "✅";
     public static final String MY_ADS = "ma";
     public static final String OTHER_ADS = "oa";
     public static final String LOCAL_ADS = "ld";
@@ -28,4 +29,5 @@ public class ConstantMessages {
     public static final String ACCEPT_BOOKING = "Подтвердить бронирование ✅";
     public static final String BACK_FROM_DATE_CHOOSE = "bc";
     public static final String ADMIN_COMMAND = "/admin";
+    public static final String ADMIN_ADS = "ad";
 }

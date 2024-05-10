@@ -2,8 +2,10 @@ package com.kolyapetrov.telegram_bot.controller.commands;
 
 import com.kolyapetrov.telegram_bot.controller.CommandHandler;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
-import com.kolyapetrov.telegram_bot.util.Command;
+import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
+import com.kolyapetrov.telegram_bot.util.enums.Command;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.enums.OrderState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,14 +38,16 @@ public class CheckAdsAdminCommand implements CommandHandler {
         String username = update.getMessage().getFrom().getUserName();
 
         if (adminUsernames.contains(username)) {
-            var orders = orderService.findOrdersByCheckedIsNot();
+            var orders = orderService.findByState(OrderState.NOT_CHECKED);
             if (orders.isEmpty()) {
                 sender.execute(MessageUtil.getMessage(chatId, "Пока что нет новых объявлений от пользователей"));
 
             } else {
                 for (var order : orders) {
                     //TODO: create keyboard for administration of orders
-                    sender.execute(MessageUtil.getMessage(chatId, order.toString()));
+                    String photoId = order.getPhotos().get(0).getId();
+                    sender.execute(MessageUtil.getMessage(chatId, order.toString(), photoId,
+                            KeyBoardUtil.adminKeyboard(order.getId())));
                 }
             }
         } else {

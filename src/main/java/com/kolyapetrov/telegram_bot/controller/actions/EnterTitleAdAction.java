@@ -5,14 +5,14 @@ import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
-import com.kolyapetrov.telegram_bot.util.UserState;
+import com.kolyapetrov.telegram_bot.util.enums.OrderState;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 @Component
@@ -37,6 +37,7 @@ public class EnterTitleAdAction implements ActionHandler {
         if (update.getMessage().hasText()) {
             String title = update.getMessage().getText();
             Order order = Order.builder()
+                    .state(OrderState.NOT_CHECKED)
                     .title(title)
                     .photos(new LinkedList<>())
                     .build();

@@ -1,7 +1,7 @@
 package com.kolyapetrov.telegram_bot.controller.callbacks;
 
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
-import com.kolyapetrov.telegram_bot.util.CallBackName;
+import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

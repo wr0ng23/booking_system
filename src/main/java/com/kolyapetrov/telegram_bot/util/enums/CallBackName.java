@@ -1,5 +1,6 @@
-package com.kolyapetrov.telegram_bot.util;
+package com.kolyapetrov.telegram_bot.util.enums;
 
+import com.kolyapetrov.telegram_bot.util.ConstantMessages;
 import lombok.Getter;
 
 @Getter
@@ -12,7 +13,8 @@ public enum CallBackName {
     ALREADY_BOOKED_DATES(ConstantMessages.ALREADY_BOOKED),
     BOOK_BUTTON(ConstantMessages.BOOKING_PRIVATE),
     BACK_FROM_BOOKING(ConstantMessages.BACK_FROM_DATE_CHOOSE),
-    ACCEPT_BOOKING(ConstantMessages.ACCEPT_BOOKING_PRIVATE);
+    ACCEPT_BOOKING(ConstantMessages.ACCEPT_BOOKING_PRIVATE),
+    ADMIN_ACTIONS(ConstantMessages.ADMIN_ADS);
 
     private final String callBackName;
 

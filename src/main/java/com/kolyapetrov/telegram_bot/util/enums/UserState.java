@@ -1,4 +1,4 @@
-package com.kolyapetrov.telegram_bot.util;
+package com.kolyapetrov.telegram_bot.util.enums;
 
 public enum UserState {
     MAIN,

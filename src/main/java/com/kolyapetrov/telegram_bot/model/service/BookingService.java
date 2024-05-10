@@ -1,6 +1,6 @@
 package com.kolyapetrov.telegram_bot.model.service;
 
-import com.kolyapetrov.telegram_bot.util.BookingTemp;
+import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
 
 import java.time.LocalDate;
 import java.util.List;

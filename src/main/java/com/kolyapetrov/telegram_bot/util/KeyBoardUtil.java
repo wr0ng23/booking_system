@@ -88,6 +88,28 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
+    public static InlineKeyboardMarkup adminKeyboard(Long idOfCurrentOrder) {
+        InlineKeyboardButton seePhotosOrderButton = getButtonForAdminKeyboard(SEE_PHOTOS_AD, idOfCurrentOrder);
+        InlineKeyboardButton deleteOrderButton = getButtonForAdminKeyboard(DELETE_AD, idOfCurrentOrder);
+        InlineKeyboardButton acceptOrderButton = getButtonForAdminKeyboard(ACCEPT_AD, idOfCurrentOrder);
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        keyboardButtonsRow.add(seePhotosOrderButton);
+        keyboardButtonsRow.add(deleteOrderButton);
+        keyboardButtonsRow.add(acceptOrderButton);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow);
+
+        return new InlineKeyboardMarkup(rowList);
+    }
+
+    private static InlineKeyboardButton getButtonForAdminKeyboard(String nameOfButton, Long idOfCurrentOrder) {
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(nameOfButton);
+        button.setCallbackData(ADMIN_ADS + " " + nameOfButton + " " + idOfCurrentOrder);
+        return button;
+    }
+
     public static InlineKeyboardMarkup seeMyADsKeyboard(Long idOfCurrentOrder) {
         InlineKeyboardButton editOrderButton = getButtonForMyAds(EDIT_AD, idOfCurrentOrder);
         InlineKeyboardButton seePhotosOrderButton = getButtonForMyAds(SEE_PHOTOS_AD, idOfCurrentOrder);
