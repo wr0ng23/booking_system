@@ -56,6 +56,9 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
         Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
 
         var photos = order.getPhotos();
+        sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Все фото из объявления показаны в " +
+                "ответе на текущее сообщение!"));
+
         if (photos.size() == 1) {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), photos.get(0).getId(), userInfo.getMessageId()));
         } else {

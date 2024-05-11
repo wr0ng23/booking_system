@@ -80,7 +80,8 @@ public class SeeMyAdsCallBackQuery implements CallBackHandler {
         // bad code, but it still works
         if (orders.size() == 1) {
             sender.execute(new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId()));
-            sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "У вас больше нет созданных объявлений!"));
+            sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(),
+                    "Объявление успешно удалено. У вас больше нет созданных объявлений!"));
 
         } else {
             int[] indexes = OrderUtil.getIndexesOfNeighboringOrders(index, orders.size());
@@ -89,6 +90,8 @@ public class SeeMyAdsCallBackQuery implements CallBackHandler {
             orders.remove(index);
             appUser.setOrders(orders);
             userService.saveUser(appUser);
+            sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(),
+                    "Объявление успешно удалено!"));
             getNextOrderQuery(userInfo, callBackInfo, sender);
         }
     }
@@ -97,6 +100,9 @@ public class SeeMyAdsCallBackQuery implements CallBackHandler {
         Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
 
         var photos = order.getPhotos();
+        sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Все фото из объявления показаны в " +
+                "ответе на текущее сообщение!"));
+
         if (photos.size() == 1) {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), photos.get(0).getId(), userInfo.getMessageId()));
         } else {
@@ -122,11 +128,11 @@ public class SeeMyAdsCallBackQuery implements CallBackHandler {
                     newCurrentOrder.getId(), rightNewOrder.getId());
 
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                    newMainPhotoId, String.valueOf(newCurrentOrder), keyboard));
+                    newMainPhotoId, newCurrentOrder.toStringMyAd(), keyboard));
         } else {
             InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard(newCurrentOrder.getId());
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
-                    newMainPhotoId, String.valueOf(newCurrentOrder), keyboard));
+                    newMainPhotoId, newCurrentOrder.toStringMyAd(), keyboard));
         }
 
     }

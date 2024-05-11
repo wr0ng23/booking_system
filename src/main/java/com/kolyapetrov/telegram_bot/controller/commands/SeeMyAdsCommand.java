@@ -47,10 +47,10 @@ public class SeeMyAdsCommand implements CommandHandler {
                 Long currentOrderId = orders.get(0).getId();
                 Long rightOrderId = orders.get(1).getId();
 
-                sender.execute(MessageUtil.getMessage(chatId, String.valueOf(firstOrder), mainPhotoId,
+                sender.execute(MessageUtil.getMessage(chatId, firstOrder.toStringMyAd(), mainPhotoId,
                         KeyBoardUtil.seeMyADsKeyboard(leftOrderId, currentOrderId, rightOrderId)));
             } else {
-                sender.execute(MessageUtil.getMessage(chatId, String.valueOf(firstOrder), mainPhotoId,
+                sender.execute(MessageUtil.getMessage(chatId, firstOrder.toStringMyAd(), mainPhotoId,
                         KeyBoardUtil.seeMyADsKeyboard(orders.get(0).getId())));
             }
         }

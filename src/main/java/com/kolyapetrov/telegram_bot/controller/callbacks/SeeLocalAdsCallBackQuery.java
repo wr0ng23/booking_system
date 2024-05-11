@@ -97,7 +97,8 @@ public class SeeLocalAdsCallBackQuery implements CallBackHandler {
             throws TelegramApiException {
 
         Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
-
+        sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Все фото из объявления показаны в " +
+                "ответе на текущее сообщение!"));
         var photos = order.getPhotos();
         if (photos.size() == 1) {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), photos.get(0).getId(), userInfo.getMessageId()));

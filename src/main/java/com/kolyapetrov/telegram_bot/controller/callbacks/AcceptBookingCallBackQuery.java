@@ -3,6 +3,7 @@ package com.kolyapetrov.telegram_bot.controller.callbacks;
 import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
+import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
 import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
@@ -56,7 +57,6 @@ public class AcceptBookingCallBackQuery implements CallBackHandler {
         DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
         sender.execute(deleteMessage);
 
-        //TODO: more details about booking needed
         String username = orderService.findUserNameByOrderId(orderId);
         sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Объявление забронировано, " +
                 "вы можете связаться с арендодателем для уточнения деталей!\n tg арендодателя: @" + username));
@@ -64,9 +64,11 @@ public class AcceptBookingCallBackQuery implements CallBackHandler {
         String landLordId = orderService.findUserIdByOrderId(orderId).toString();
         LocalDate startDate = bookingTemp.getStartDate();
         LocalDate endDate = bookingTemp.getEndDate();
-        long price = orderService.findOrderById(orderId).getPrice() * startDate.datesUntil(endDate).toList().size();
+        Order order = orderService.findOrderById(orderId);
+        long price = order.getPrice() * startDate.datesUntil(endDate).toList().size();
 
         sender.execute(MessageUtil.getMessage(landLordId, "Пользователь: @" + userInfo.getAppUser().getNameOfUser()
-                + " забронировал у вас жилье на период с " + startDate + " до " + endDate + " на итоговую сумму: " + price));
+                + " забронировал у вас жилье: \"" + order.getTitle() + "\" на период с " + startDate + " до " + endDate +
+                " на итоговую сумму: " + price + "руб. (" + order.getPrice() + "руб./сутки)"));
     }
 }

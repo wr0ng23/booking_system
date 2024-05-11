@@ -69,4 +69,13 @@ Order {
                 "<b>Цена:</b> " + getPrice() + " руб." + "\n\n" +
                 "<b>Автор объявления:</b> @" + user.getNameOfUser();
     }
+
+    public String toStringMyAd() {
+        return "<b>Статус объявления:</b> " + getState().getName() + "\n\n" +
+                "<b>Название:</b>\n" + getTitle() + "\n\n" +
+                "<b>Описание:</b>\n" + getDescription() + "\n\n" +
+                "<b>Город:</b> " + getCity() + "\n" +
+                "<b>Адрес:</b> " + getAddress() + "\n\n" +
+                "<b>Цена:</b> " + getPrice() + " руб. / сутки";
+    }
 }

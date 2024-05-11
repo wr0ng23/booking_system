@@ -30,4 +30,7 @@ public class Booking {
 
     @Column(name = "date_end")
     private LocalDate dateEnd;
+
+    @Column(name = "is_accepted")
+    private boolean isAccepted;
 }

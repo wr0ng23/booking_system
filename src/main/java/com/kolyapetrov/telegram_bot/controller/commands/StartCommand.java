@@ -29,7 +29,6 @@ public class StartCommand implements CommandHandler {
         AppUser appUser = userService.getUser(update.getMessage().getFrom());
         appUser.setUserState(UserState.MAIN);
         userService.saveUser(appUser);
-
         sender.execute(MessageUtil.getMessage(chatId, DESCRIPTION, KeyBoardUtil.mainKeyBoard()));
     }
 
