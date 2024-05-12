@@ -66,16 +66,30 @@ public class KeyBoardUtil {
         return keyboardMarkup;
     }
 
+    public static InlineKeyboardMarkup acceptBookingKeyboard(Long bookingId) {
+        InlineKeyboardButton acceptBookingButton = getButton(BOOKING_REQUEST, ACCEPT_AD, bookingId);
+        InlineKeyboardButton deleteBookingButton = getButton(BOOKING_REQUEST, DELETE_AD, bookingId);
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        keyboardButtonsRow.add(acceptBookingButton);
+        keyboardButtonsRow.add(deleteBookingButton);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow);
+
+        return new InlineKeyboardMarkup(rowList);
+    }
+
+
     public static InlineKeyboardMarkup seeMyADsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder) {
-        InlineKeyboardButton leftOrderButton = getButtonForMyAds(LEFT_AD, idOfLeftOrder);
-        InlineKeyboardButton rightOrderButton = getButtonForMyAds(RIGHT_AD, idOfRightOrder);
+        InlineKeyboardButton leftOrderButton = getButton(MY_ADS, LEFT_AD, idOfLeftOrder);
+        InlineKeyboardButton rightOrderButton = getButton(MY_ADS, RIGHT_AD, idOfRightOrder);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(leftOrderButton);
         keyboardButtonsRow1.add(rightOrderButton);
 
-        InlineKeyboardButton editOrderButton = getButtonForMyAds(EDIT_AD, idOfCurrentOrder);
-        InlineKeyboardButton seePhotosOrderButton = getButtonForMyAds(SEE_PHOTOS_AD, idOfCurrentOrder);
-        InlineKeyboardButton deleteOrderButton = getButtonForMyAds(DELETE_AD, idOfCurrentOrder);
+        InlineKeyboardButton editOrderButton = getButton(MY_ADS, EDIT_AD, idOfCurrentOrder);
+        InlineKeyboardButton seePhotosOrderButton = getButton(MY_ADS, SEE_PHOTOS_AD, idOfCurrentOrder);
+        InlineKeyboardButton deleteOrderButton = getButton(MY_ADS, DELETE_AD, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
         keyboardButtonsRow2.add(seePhotosOrderButton);
         keyboardButtonsRow2.add(editOrderButton);
@@ -89,13 +103,13 @@ public class KeyBoardUtil {
     }
 
     public static InlineKeyboardMarkup adminKeyboard(Long idOfCurrentOrder) {
-        InlineKeyboardButton seePhotosOrderButton = getButtonForAdminKeyboard(SEE_PHOTOS_AD, idOfCurrentOrder);
-        InlineKeyboardButton deleteOrderButton = getButtonForAdminKeyboard(DELETE_AD, idOfCurrentOrder);
-        InlineKeyboardButton acceptOrderButton = getButtonForAdminKeyboard(ACCEPT_AD, idOfCurrentOrder);
+        InlineKeyboardButton seePhotosOrderButton = getButton(ADMIN_ADS, SEE_PHOTOS_AD, idOfCurrentOrder);
+        InlineKeyboardButton acceptOrderButton = getButton(ADMIN_ADS, ACCEPT_AD, idOfCurrentOrder);
+        InlineKeyboardButton deleteOrderButton = getButton(ADMIN_ADS, DELETE_AD, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         keyboardButtonsRow.add(seePhotosOrderButton);
-        keyboardButtonsRow.add(deleteOrderButton);
         keyboardButtonsRow.add(acceptOrderButton);
+        keyboardButtonsRow.add(deleteOrderButton);
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow);
@@ -103,17 +117,10 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    private static InlineKeyboardButton getButtonForAdminKeyboard(String nameOfButton, Long idOfCurrentOrder) {
-        InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(nameOfButton);
-        button.setCallbackData(ADMIN_ADS + " " + nameOfButton + " " + idOfCurrentOrder);
-        return button;
-    }
-
     public static InlineKeyboardMarkup seeMyADsKeyboard(Long idOfCurrentOrder) {
-        InlineKeyboardButton editOrderButton = getButtonForMyAds(EDIT_AD, idOfCurrentOrder);
-        InlineKeyboardButton seePhotosOrderButton = getButtonForMyAds(SEE_PHOTOS_AD, idOfCurrentOrder);
-        InlineKeyboardButton deleteOrderButton = getButtonForMyAds(DELETE_AD, idOfCurrentOrder);
+        InlineKeyboardButton editOrderButton = getButton(MY_ADS, EDIT_AD, idOfCurrentOrder);
+        InlineKeyboardButton seePhotosOrderButton = getButton(MY_ADS, SEE_PHOTOS_AD, idOfCurrentOrder);
+        InlineKeyboardButton deleteOrderButton = getButton(MY_ADS, DELETE_AD, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         keyboardButtonsRow.add(seePhotosOrderButton);
         keyboardButtonsRow.add(editOrderButton);
@@ -123,13 +130,6 @@ public class KeyBoardUtil {
         rowList.add(keyboardButtonsRow);
 
         return new InlineKeyboardMarkup(rowList);
-    }
-
-    private static InlineKeyboardButton getButtonForMyAds(String nameOfButton, Long idOfCurrentOrder) {
-        InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(nameOfButton);
-        button.setCallbackData(MY_ADS + " " + nameOfButton + " " + idOfCurrentOrder);
-        return button;
     }
 
     public static InlineKeyboardMarkup seeOtherADsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder,

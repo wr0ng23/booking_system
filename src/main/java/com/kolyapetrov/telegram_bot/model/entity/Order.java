@@ -67,12 +67,18 @@ Order {
 
     @Override
     public String toString() {
+        String infoAboutMetro = "";
+        if (!metroDistances.isEmpty()) {
+            infoAboutMetro = getInfoAboutMetro();
+        }
+
         return "<b>Название:</b>\n" + getTitle() + "\n\n" +
                 "<b>Описание:</b>\n" + getDescription() + "\n\n" +
                 "<b>Город:</b> " + getCity() + "\n" +
                 "<b>Адрес:</b> " + getAddress() + "\n\n" +
-                "<b>Цена:</b> " + getPrice() + " руб." + "\n\n" +
-                "<b>Автор объявления:</b> @" + user.getNameOfUser();
+                "<b>Стоимость проживания:</b> " + getPrice() + " руб./сутки" + "\n\n" +
+                infoAboutMetro +
+                "<b>Автор объявления:</b> @" + user.getNameOfUser() ;
     }
 
     private String getInfoAboutMetro() {
@@ -83,21 +89,15 @@ Order {
                         .append(": ")
                         .append(OrderUtil.getDistanceToMetro(metroDistance.getDistance()))
                         .append("\n"));
-        return infoAboutmetro.toString();
+        return infoAboutmetro.append("\n").toString();
     }
 
     public String toStringMyAd() {
-        String infoAboutMetro = "";
-        if (!metroDistances.isEmpty()) {
-            infoAboutMetro = getInfoAboutMetro();
-        }
-
         return "<b>Статус объявления:</b> " + getState().getName() + "\n\n" +
                 "<b>Название:</b>\n" + getTitle() + "\n\n" +
                 "<b>Описание:</b>\n" + getDescription() + "\n\n" +
                 "<b>Город:</b> " + getCity() + "\n" +
                 "<b>Адрес:</b> " + getAddress() + "\n\n" +
-                "<b>Цена:</b> " + getPrice() + " руб. / сутки" + "\n\n" +
-                infoAboutMetro;
+                "<b>Стоимость проживания:</b> " + getPrice() + " руб./сутки";
     }
 }

@@ -30,4 +30,5 @@ public class ConstantMessages {
     public static final String BACK_FROM_DATE_CHOOSE = "bc";
     public static final String ADMIN_COMMAND = "/admin";
     public static final String ADMIN_ADS = "ad";
+    public static final String BOOKING_REQUEST = "br";
 }

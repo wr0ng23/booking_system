@@ -64,10 +64,7 @@ public class AdminActionsCallBackQuery implements CallBackHandler {
         order.setState(OrderState.FORBIDDEN);
         orderService.saveOrder(order);
         sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(),"Объявление отклонено!"));
-        DeleteMessage deleteMessage = DeleteMessage.builder()
-                .chatId(userInfo.getChatId())
-                .messageId(userInfo.getMessageId())
-                .build();
+        DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
         sender.execute(deleteMessage);
     }
 
@@ -76,10 +73,7 @@ public class AdminActionsCallBackQuery implements CallBackHandler {
         order.setState(OrderState.CHECKED);
         orderService.saveOrder(order);
         sender.execute(MessageUtil.getAnswerCallbackQuery(callBackInfo.getId(), "Объявление принято!"));
-        DeleteMessage deleteMessage = DeleteMessage.builder()
-                .chatId(userInfo.getChatId())
-                .messageId(userInfo.getMessageId())
-                .build();
+        DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
         sender.execute(deleteMessage);
     }
 }

@@ -5,6 +5,7 @@ import com.kolyapetrov.telegram_bot.model.repository.BookingRepository;
 import com.kolyapetrov.telegram_bot.model.repository.OrderRepository;
 import com.kolyapetrov.telegram_bot.model.repository.UserRepository;
 import com.kolyapetrov.telegram_bot.model.entity.BookingTemp;
+import com.kolyapetrov.telegram_bot.util.enums.BookingStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<LocalDate> findBookedDatesByOrderId(Long orderId) {
         List<Booking> bookings = bookingRepository.findByOrder_Id(orderId);
-
+        // mb it needs to be changed by sql better sql request
+        bookings = bookings.stream().filter(booking -> booking.getStatus() == BookingStatus.ACCEPT).toList();
         Set<LocalDate> bookedDates = new HashSet<>();
 //        Map<LocalDate, Integer> bookedDatesMap = new HashMap<>();
 
@@ -83,13 +85,38 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void insertNewRecord(BookingTemp bookingTemp) {
+    public Booking insertNewRecord(BookingTemp bookingTemp) {
         Booking booking = new Booking();
         booking.setDateStart(bookingTemp.getStartDate());
         booking.setDateEnd(bookingTemp.getEndDate());
-        booking.setUser(userRepository.findById(bookingTemp.getUserId()).get());
-        booking.setOrder(orderRepository.findById(bookingTemp.getOrderId()).get());
+        booking.setUser(userRepository.findById(bookingTemp.getUserId()).orElse(null));
+        booking.setOrder(orderRepository.findById(bookingTemp.getOrderId()).orElse(null));
+        booking.setStatus(BookingStatus.NOT_CHECKED);
 
+        return bookingRepository.save(booking);
+    }
+
+    @Override
+    public void deleteBookingById(Long bookingId) {
+        Booking booking = findBookingById(bookingId);
+        if (booking != null) {
+           bookingRepository.delete(booking);
+        }
+    }
+
+    @Override
+    public void saveBooking(Booking booking) {
         bookingRepository.save(booking);
+    }
+
+    @Override
+    public Booking findBookingById(Long bookingId) {
+        return bookingRepository.findById(bookingId).orElse(null);
+    }
+
+    @Override
+    public Booking findBooking(BookingTemp bookingTemp) {
+        return bookingRepository.findByOrder_IdAndUser_UserIdAndDateStartAndDateEnd(bookingTemp.getOrderId(),
+                bookingTemp.getUserId(), bookingTemp.getStartDate(), bookingTemp.getEndDate());
     }
 }

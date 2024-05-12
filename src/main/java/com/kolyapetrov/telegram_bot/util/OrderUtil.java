@@ -48,7 +48,7 @@ public class OrderUtil {
         String distanceToPerson;
         if (distanceInMeters > 1000.0) {
             double distanceInKilometers = distanceInMeters / 1000.0;
-            String formattedDistance = String.format("%.2f", distanceInKilometers);
+            String formattedDistance = String.format("%.1f", distanceInKilometers);
             distanceToPerson = formattedDistance + " км";
         } else {
             distanceToPerson = Math.round(distanceInMeters) + " м";

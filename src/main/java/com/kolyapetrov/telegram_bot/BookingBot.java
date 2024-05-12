@@ -140,7 +140,7 @@ public class BookingBot extends TelegramLongPollingBot {
         CallBackInfo callBackInfo =  CallBackInfo.builder().build();
 
         switch (callBackParts[0]) {
-            case OTHER_ADS, LOCAL_ADS, MY_ADS, ADMIN_ADS -> {
+            case OTHER_ADS, LOCAL_ADS, MY_ADS, ADMIN_ADS, BOOKING_REQUEST -> {
                 callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
                 callBackInfo.setNameOfButton(callBackParts[1]);
             }

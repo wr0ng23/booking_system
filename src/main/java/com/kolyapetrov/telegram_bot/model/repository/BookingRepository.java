@@ -4,9 +4,11 @@ import com.kolyapetrov.telegram_bot.model.entity.Booking;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import org.springframework.data.repository.CrudRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface BookingRepository extends CrudRepository<Booking, Long> {
     List<Booking> findByOrder(Order order);
     List<Booking> findByOrder_Id(Long orderId);
+    Booking findByOrder_IdAndUser_UserIdAndDateStartAndDateEnd(Long id, Long userId, LocalDate start, LocalDate end);
 }

@@ -59,3 +59,6 @@ CREATE table metro_distance_order
     foreign key (id_metro) references metro_info (id),
     foreign key (id_order) references orders (id)
 );
+
+ALTER TABLE booking
+    ADD CONSTRAINT unique_records UNIQUE (id_of_order, id_of_user, date_start, date_end);

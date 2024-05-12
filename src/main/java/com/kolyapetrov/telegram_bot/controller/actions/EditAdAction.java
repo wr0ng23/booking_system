@@ -3,6 +3,7 @@ package com.kolyapetrov.telegram_bot.controller.actions;
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
+import com.kolyapetrov.telegram_bot.util.enums.OrderState;
 import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
@@ -37,6 +38,7 @@ public class EditAdAction implements ActionHandler {
             var orderForEdit = appUser.getOrders().stream().filter(Order::isEditing).findFirst().get();
             orderForEdit.setDescription(description);
             orderForEdit.setEditing(false);
+            orderForEdit.setState(OrderState.NOT_CHECKED);
             sender.execute(MessageUtil.getMessage(chatId, "Описание успешно обновлено!", KeyBoardUtil.mainKeyBoard()));
             appUser.setUserState(UserState.MAIN);
             userService.saveUser(appUser);

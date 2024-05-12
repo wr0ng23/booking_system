@@ -1,5 +1,6 @@
 package com.kolyapetrov.telegram_bot.model.entity;
 
+import com.kolyapetrov.telegram_bot.util.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,6 +32,7 @@ public class Booking {
     @Column(name = "date_end")
     private LocalDate dateEnd;
 
-    @Column(name = "is_accepted")
-    private boolean isAccepted;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private BookingStatus status;
 }
