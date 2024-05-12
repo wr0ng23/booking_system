@@ -6,10 +6,10 @@ import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
-import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
+import com.kolyapetrov.telegram_bot.model.entity.BookingTemp;
 import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
-import com.kolyapetrov.telegram_bot.util.TempTableManager;
+import com.kolyapetrov.telegram_bot.model.service.BookingTempTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -21,14 +21,14 @@ import java.time.LocalDate;
 @Component
 public class AcceptBookingCallBackQuery implements CallBackHandler {
     private final BookingService bookingService;
-    private final TempTableManager tempTableManager;
+    private final BookingTempTableService bookingTempTableService;
     private final OrderService orderService;
 
     @Autowired
-    public AcceptBookingCallBackQuery(BookingService bookingService, TempTableManager tempTableManager,
+    public AcceptBookingCallBackQuery(BookingService bookingService, BookingTempTableService bookingTempTableService,
                                       OrderService orderService) {
         this.bookingService = bookingService;
-        this.tempTableManager = tempTableManager;
+        this.bookingTempTableService = bookingTempTableService;
         this.orderService = orderService;
     }
 
@@ -42,16 +42,16 @@ public class AcceptBookingCallBackQuery implements CallBackHandler {
         Long userId = userInfo.getAppUser().getUserId();
         Long orderId = callBackInfo.getNumberOfOrder();
 
-        tempTableManager.createTempTable();
-        var tempBookingRecordId = tempTableManager.getRecordId(userId, orderId);
-        BookingTemp bookingTemp = tempTableManager.getRecordById(tempBookingRecordId);
+        bookingTempTableService.createTempTable();
+        var tempBookingRecordId = bookingTempTableService.getRecordId(userId, orderId);
+        BookingTemp bookingTemp = bookingTempTableService.getRecordById(tempBookingRecordId);
         if (bookingTemp == null || bookingTemp.getStartDate() == null || bookingTemp.getEndDate() == null) {
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(),
                     "Вам необходимо выбрать дату начала бронирования и конца!"));
             return;
         }
 
-        tempTableManager.deleteRecordById(tempBookingRecordId);
+        bookingTempTableService.deleteRecordById(tempBookingRecordId);
         bookingService.insertNewRecord(bookingTemp);
 
         DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());

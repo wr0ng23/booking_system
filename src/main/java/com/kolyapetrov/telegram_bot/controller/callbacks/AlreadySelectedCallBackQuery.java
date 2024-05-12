@@ -4,8 +4,9 @@ import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
+import com.kolyapetrov.telegram_bot.model.service.BookingTempTableService;
 import com.kolyapetrov.telegram_bot.util.*;
-import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
+import com.kolyapetrov.telegram_bot.model.entity.BookingTemp;
 import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,12 @@ import java.time.LocalDate;
 @Component
 public class AlreadySelectedCallBackQuery implements CallBackHandler {
     private final BookingService bookingService;
-    private final TempTableManager tempTableManager;
+    private final BookingTempTableService bookingTempTableService;
 
     @Autowired
-    public AlreadySelectedCallBackQuery(BookingService bookingService, TempTableManager tempTableManager) {
+    public AlreadySelectedCallBackQuery(BookingService bookingService, BookingTempTableService bookingTempTableService) {
         this.bookingService = bookingService;
-        this.tempTableManager = tempTableManager;
+        this.bookingTempTableService = bookingTempTableService;
     }
 
     @Override
@@ -37,19 +38,19 @@ public class AlreadySelectedCallBackQuery implements CallBackHandler {
         Long orderId = callBackInfo.getNumberOfOrder();
         String selectedDate = callBackInfo.getSelectedDate();
 
-        Long recordId = tempTableManager.getRecordId(userId, orderId);
-        BookingTemp bookingTemp = tempTableManager.getRecordById(recordId);
+        Long recordId = bookingTempTableService.getRecordId(userId, orderId);
+        BookingTemp bookingTemp = bookingTempTableService.getRecordById(recordId);
 
         if (bookingTemp.getEndDate() != null && bookingTemp.getEndDate().equals(LocalDate.parse(selectedDate))) {
-            LocalDate startBooking = tempTableManager.getStartDateById(recordId);
-            tempTableManager.updateEndDate(recordId, null);
+            LocalDate startBooking = bookingTempTableService.getStartDateById(recordId);
+            bookingTempTableService.updateEndDate(recordId, null);
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                     KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates, startBooking,
                             null)));
 
         } else if (bookingTemp.getStartDate() != null && bookingTemp.getStartDate().equals(LocalDate.parse(selectedDate))) {
-            LocalDate endBooking = tempTableManager.getEndDateById(recordId);
-            tempTableManager.updateStartDate(recordId, null);
+            LocalDate endBooking = bookingTempTableService.getEndDateById(recordId);
+            bookingTempTableService.updateStartDate(recordId, null);
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                     KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates, null,
                             endBooking)));

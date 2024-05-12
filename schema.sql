@@ -30,11 +30,32 @@ CREATE TABLE photos_of_order
 
 CREATE TABLE booking
 (
-    id serial primary key,
+    id          serial primary key,
     id_of_order bigint,
     id_of_user  bigint,
     date_start  date,
     date_end    date,
     foreign key (id_of_order) references orders (id),
     foreign key (id_of_user) references users (id)
+);
+
+CREATE table metro_info
+(
+    id        serial primary key,
+    name      varchar,
+    city      varchar,
+    longitude double precision,
+    latitude  double precision,
+    line_id   int,
+    unique (name, city)
+);
+
+CREATE table metro_distance_order
+(
+    id       serial primary key,
+    id_metro int,
+    id_order int,
+    distance double precision,
+    foreign key (id_metro) references metro_info (id),
+    foreign key (id_order) references orders (id)
 );

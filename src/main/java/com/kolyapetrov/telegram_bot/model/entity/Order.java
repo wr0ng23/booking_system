@@ -1,11 +1,13 @@
 package com.kolyapetrov.telegram_bot.model.entity;
 
+import com.kolyapetrov.telegram_bot.util.OrderUtil;
 import com.kolyapetrov.telegram_bot.util.enums.OrderState;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Getter
 @Setter
@@ -60,6 +62,9 @@ Order {
     @JoinColumn(name = "id_of_user")
     private AppUser user;
 
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    List<MetroDistance> metroDistances;
+
     @Override
     public String toString() {
         return "<b>Название:</b>\n" + getTitle() + "\n\n" +
@@ -70,12 +75,29 @@ Order {
                 "<b>Автор объявления:</b> @" + user.getNameOfUser();
     }
 
+    private String getInfoAboutMetro() {
+        StringBuilder infoAboutmetro = new StringBuilder("<b>Расстояние до ближайших станций метро:</b>\n");
+        metroDistances.forEach(metroDistance ->
+                infoAboutmetro
+                        .append(metroDistance.getMetroInfo().getName())
+                        .append(": ")
+                        .append(OrderUtil.getDistanceToMetro(metroDistance.getDistance()))
+                        .append("\n"));
+        return infoAboutmetro.toString();
+    }
+
     public String toStringMyAd() {
+        String infoAboutMetro = "";
+        if (!metroDistances.isEmpty()) {
+            infoAboutMetro = getInfoAboutMetro();
+        }
+
         return "<b>Статус объявления:</b> " + getState().getName() + "\n\n" +
                 "<b>Название:</b>\n" + getTitle() + "\n\n" +
                 "<b>Описание:</b>\n" + getDescription() + "\n\n" +
                 "<b>Город:</b> " + getCity() + "\n" +
                 "<b>Адрес:</b> " + getAddress() + "\n\n" +
-                "<b>Цена:</b> " + getPrice() + " руб. / сутки";
+                "<b>Цена:</b> " + getPrice() + " руб. / сутки" + "\n\n" +
+                infoAboutMetro;
     }
 }

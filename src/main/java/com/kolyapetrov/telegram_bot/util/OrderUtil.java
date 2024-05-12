@@ -43,4 +43,16 @@ public class OrderUtil {
         }
         return distanceToPerson;
     }
+
+    public static String getDistanceToMetro(double distanceInMeters) {
+        String distanceToPerson;
+        if (distanceInMeters > 1000.0) {
+            double distanceInKilometers = distanceInMeters / 1000.0;
+            String formattedDistance = String.format("%.2f", distanceInKilometers);
+            distanceToPerson = formattedDistance + " км";
+        } else {
+            distanceToPerson = Math.round(distanceInMeters) + " м";
+        }
+        return distanceToPerson;
+    }
 }

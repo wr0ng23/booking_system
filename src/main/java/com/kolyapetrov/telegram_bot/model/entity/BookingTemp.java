@@ -1,4 +1,4 @@
-package com.kolyapetrov.telegram_bot.util.enums;
+package com.kolyapetrov.telegram_bot.model.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -4,8 +4,9 @@ import com.kolyapetrov.telegram_bot.controller.CallBackHandler;
 import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.service.BookingService;
+import com.kolyapetrov.telegram_bot.model.service.BookingTempTableService;
 import com.kolyapetrov.telegram_bot.util.*;
-import com.kolyapetrov.telegram_bot.util.enums.BookingTemp;
+import com.kolyapetrov.telegram_bot.model.entity.BookingTemp;
 import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,12 +20,12 @@ import java.util.List;
 @Component
 public class DateChooseCallBackQuery implements CallBackHandler {
     private final BookingService bookingService;
-    private final TempTableManager tempTableManager;
+    private final BookingTempTableService bookingTempTableService;
 
     @Autowired
-    public DateChooseCallBackQuery(BookingService bookingService, TempTableManager tempTableManager) {
+    public DateChooseCallBackQuery(BookingService bookingService, BookingTempTableService bookingTempTableService) {
         this.bookingService = bookingService;
-        this.tempTableManager = tempTableManager;
+        this.bookingTempTableService = bookingTempTableService;
     }
 
     @Override
@@ -39,9 +40,9 @@ public class DateChooseCallBackQuery implements CallBackHandler {
         Long orderId = callBackInfo.getNumberOfOrder();
         String selectedDate = callBackInfo.getSelectedDate();
 
-        tempTableManager.createTempTable();
-        Long recordId = tempTableManager.getRecordId(userId, orderId);
-        BookingTemp bookingTemp = tempTableManager.getRecordById(recordId);
+        bookingTempTableService.createTempTable();
+        Long recordId = bookingTempTableService.getRecordId(userId, orderId);
+        BookingTemp bookingTemp = bookingTempTableService.getRecordById(recordId);
 
         LocalDate startBooking = null, endBooking = null;
         if (bookingTemp != null) {
@@ -63,16 +64,16 @@ public class DateChooseCallBackQuery implements CallBackHandler {
 
         if (bookingTemp == null || startBooking == null) {
             if (bookingTemp == null) {
-                tempTableManager.insertDate(userId, callBackInfo.getNumberOfOrder(), selectedDate);
+                bookingTempTableService.insertDate(userId, callBackInfo.getNumberOfOrder(), selectedDate);
             } else {
-                tempTableManager.updateStartDate(recordId, selectedDate);
+                bookingTempTableService.updateStartDate(recordId, selectedDate);
             }
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                     KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates,
                             LocalDate.parse(selectedDate), endBooking)));
 
         } else if (endBooking == null) {
-            tempTableManager.updateEndDate(recordId, selectedDate);
+            bookingTempTableService.updateEndDate(recordId, selectedDate);
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                     KeyBoardUtil.getKeyboardForDates(callBackInfo.getNumberOfOrder(), bookedDates, startBooking,
                             LocalDate.parse(selectedDate))));

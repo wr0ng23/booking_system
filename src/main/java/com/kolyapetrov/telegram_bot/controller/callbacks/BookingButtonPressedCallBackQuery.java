@@ -7,7 +7,7 @@ import com.kolyapetrov.telegram_bot.model.service.BookingService;
 import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
-import com.kolyapetrov.telegram_bot.util.TempTableManager;
+import com.kolyapetrov.telegram_bot.model.service.BookingTempTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -18,12 +18,12 @@ import java.time.LocalDate;
 @Component
 public class BookingButtonPressedCallBackQuery implements CallBackHandler {
     private final BookingService bookingService;
-    private final TempTableManager tempTableManager;
+    private final BookingTempTableService bookingTempTableService;
 
     @Autowired
-    public BookingButtonPressedCallBackQuery(BookingService bookingService, TempTableManager tempTableManager) {
+    public BookingButtonPressedCallBackQuery(BookingService bookingService, BookingTempTableService bookingTempTableService) {
         this.bookingService = bookingService;
-        this.tempTableManager = tempTableManager;
+        this.bookingTempTableService = bookingTempTableService;
     }
 
     @Override
@@ -33,9 +33,9 @@ public class BookingButtonPressedCallBackQuery implements CallBackHandler {
 
     @Override
     public void handle(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
-        tempTableManager.createTempTable();
-        Long recordId = tempTableManager.getRecordId(userInfo.getAppUser().getUserId(), callBackInfo.getNumberOfOrder());
-        var bookingRecord = tempTableManager.getRecordById(recordId);
+        bookingTempTableService.createTempTable();
+        Long recordId = bookingTempTableService.getRecordId(userInfo.getAppUser().getUserId(), callBackInfo.getNumberOfOrder());
+        var bookingRecord = bookingTempTableService.getRecordById(recordId);
         LocalDate startBooking = null, endBooking= null;
         if (bookingRecord != null) {
             startBooking = bookingRecord.getStartDate();

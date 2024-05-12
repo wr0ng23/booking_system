@@ -3,10 +3,12 @@ package com.kolyapetrov.telegram_bot.controller.actions;
 import com.kolyapetrov.telegram_bot.controller.ActionHandler;
 import com.kolyapetrov.telegram_bot.model.entity.AppUser;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
-import com.kolyapetrov.telegram_bot.util.enums.UserState;
+import com.kolyapetrov.telegram_bot.model.service.MetroDistanceService;
+import com.kolyapetrov.telegram_bot.model.service.MetroService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
+import com.kolyapetrov.telegram_bot.util.enums.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
@@ -18,10 +20,14 @@ import java.util.Comparator;
 @Component
 public class EnterPriceAction implements ActionHandler {
     private final UserService userService;
+    private final MetroService metroService;
+    private final MetroDistanceService metroDistanceService;
 
     @Autowired
-    public EnterPriceAction(UserService userService) {
+    public EnterPriceAction(UserService userService, MetroService metroService, MetroDistanceService metroDistanceService) {
         this.userService = userService;
+        this.metroService = metroService;
+        this.metroDistanceService = metroDistanceService;
     }
 
     @Override
@@ -48,6 +54,16 @@ public class EnterPriceAction implements ActionHandler {
                         KeyBoardUtil.mainKeyBoard()));
                 appUser.setUserState(UserState.MAIN);
                 userService.saveUser(appUser);
+
+                var results = metroService.findClosestMetroStationByCords(order.getCity(), order.getLongitude(),
+                        order.getLatitude());
+                if (results.isEmpty()) return;
+                results.forEach(result -> result.setOrder(order));
+                metroDistanceService.saveMetroDistances(results);
+
+                results.forEach(result -> System.out.println(result.getMetroInfo().getName() + ": " +
+                        result.getDistance() + " м."));
+
             } catch (NumberFormatException e) {
                 sender.execute(MessageUtil.getMessage(chatId, "Введите цену для сдачи вашего жилья. " +
                         "Цена должны быть числом!"));
