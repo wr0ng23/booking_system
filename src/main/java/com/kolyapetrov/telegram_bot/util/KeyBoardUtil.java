@@ -31,6 +31,31 @@ public class KeyBoardUtil {
         return keyboardMarkup;
     }
 
+    public static InlineKeyboardMarkup filterForAds(long idOfFilter) {
+        String[] buttonLabels = {ENTER_CITY, ENTER_LOWER_PRICE, ENTER_UPPER_PRICE, ENTER_LOWER_DATE, ENTER_UPPER_DATE, SEARCH};
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+
+        for (String label : buttonLabels) {
+            InlineKeyboardButton button = getButton(SEARCH_FILTER, label, idOfFilter);
+            List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+            keyboardButtonsRow.add(button);
+            rowList.add(keyboardButtonsRow);
+        }
+
+        return new InlineKeyboardMarkup(rowList);
+    }
+
+    public static InlineKeyboardMarkup cancelFilter() {
+        InlineKeyboardButton button = getButton(CANCEL_FILTER, CANCEL_ACTION, 0L);
+        List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
+        keyboardButtonsRow.add(button);
+
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardButtonsRow);
+
+        return new InlineKeyboardMarkup(rowList);
+    }
+
     public static ReplyKeyboardMarkup choiceLocationOrEnterCity() {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setResizeKeyboard(true);
@@ -209,10 +234,10 @@ public class KeyBoardUtil {
         return button;
     }
 
-    private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long idOfCurrentOrder) {
+    private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long id) {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(nameOfButton);
-        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder);
+        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + id);
         return button;
     }
 

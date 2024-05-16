@@ -8,5 +8,6 @@ public enum UserState {
     ENTER_ADDRESS,
     EDIT_AD,
     SEARCH_FOR_ADS,
-    ENTER_TITLE_OF_AD
+    ENTER_TITLE_OF_AD,
+    ENTER_CITY_FOR_FILTER
 }

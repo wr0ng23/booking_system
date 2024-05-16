@@ -55,7 +55,7 @@ Order {
     Set<Booking> bookings;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "order_state")
+    @Column(name = "state")
     private OrderState state;
 
     @ManyToOne

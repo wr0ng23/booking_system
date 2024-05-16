@@ -9,13 +9,12 @@ CREATE TABLE orders
 (
     id              serial primary key,
     id_of_user      bigint,
-    number_of_order bigint,
     description     varchar,
     city            varchar,
     address         varchar,
     latitude        float8,
     longitude       float8,
-    is_editing      bool,
+    state           varchar,
     foreign key (id_of_user) references users (id),
     unique (id_of_user, number_of_order)
 );
@@ -35,6 +34,7 @@ CREATE TABLE booking
     id_of_user  bigint,
     date_start  date,
     date_end    date,
+    status      varchar,
     foreign key (id_of_order) references orders (id),
     foreign key (id_of_user) references users (id)
 );
@@ -46,7 +46,7 @@ CREATE table metro_info
     city      varchar,
     longitude double precision,
     latitude  double precision,
-    line_id   int,
+    line_id   varchar,
     unique (name, city)
 );
 

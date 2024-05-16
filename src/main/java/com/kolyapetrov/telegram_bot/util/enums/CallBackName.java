@@ -15,7 +15,9 @@ public enum CallBackName {
     BACK_FROM_BOOKING(ConstantMessages.BACK_FROM_DATE_CHOOSE),
     ACCEPT_BOOKING(ConstantMessages.ACCEPT_BOOKING_PRIVATE),
     ADMIN_ACTIONS(ConstantMessages.ADMIN_ADS),
-    BOOKING_REQUEST(ConstantMessages.BOOKING_REQUEST);
+    BOOKING_REQUEST(ConstantMessages.BOOKING_REQUEST),
+    SEARCH_FILTER(ConstantMessages.SEARCH_FILTER),
+    CANCEL_FILTER(ConstantMessages.CANCEL_FILTER);
 
     private final String callBackName;
 

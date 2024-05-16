@@ -154,6 +154,10 @@ public class BookingBot extends TelegramLongPollingBot {
                 callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
                 callBackInfo.setSelectedDate(callBackParts[1]);
             }
+            case SEARCH_FILTER -> {
+                callBackInfo.setNameOfButton(callBackParts[1] + " " + callBackParts[2]);
+                callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[3]));
+            }
             case LOCAL_ADS -> {
                 callBackInfo.setLatitude(Double.parseDouble(callBackParts[3]));
                 callBackInfo.setLongitude(Double.parseDouble(callBackParts[4]));

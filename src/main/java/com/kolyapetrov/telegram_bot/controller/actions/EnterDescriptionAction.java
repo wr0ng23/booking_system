@@ -31,6 +31,11 @@ public class EnterDescriptionAction implements ActionHandler {
 
         //TODO: add validation of description for new Ad
         if (update.getMessage().hasText()) {
+            if (update.getMessage().getText().length() > 1024) {
+                sender.execute(MessageUtil.getMessage(chatId, "Слишком длинное описание! Попробуйте еще раз.",
+                        KeyBoardUtil.finishPhotoSending()));
+                return;
+            }
             String description = update.getMessage().getText();
             var orders = appUser.getOrders()
                     .stream()

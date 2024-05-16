@@ -31,4 +31,13 @@ public class ConstantMessages {
     public static final String ADMIN_COMMAND = "/admin";
     public static final String ADMIN_ADS = "ad";
     public static final String BOOKING_REQUEST = "br";
+    public static final String ENTER_CITY = "Название города";
+    public static final String ENTER_LOWER_PRICE = "Нижняя граница цены";
+    public static final String ENTER_UPPER_PRICE = "Верхняя границы цены";
+    public static final String ENTER_LOWER_DATE = "Дата начала бронирования";
+    public static final String ENTER_UPPER_DATE = "Дата конца бронирования";
+    public static final String SEARCH = "Поиск ✅";
+    public static final String SEARCH_FILTER = "sf";
+    public static final String CANCEL_FILTER = "cf";
+    public static final String CANCEL_ACTION = "Отменить ввод фильтра ❌";
 }

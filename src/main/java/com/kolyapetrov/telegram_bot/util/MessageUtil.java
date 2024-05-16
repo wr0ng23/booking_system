@@ -26,6 +26,7 @@ public class MessageUtil {
                                          ReplyKeyboard replyKeyboardMarkup) {
         var replyMessage = getSomeMessage(chatId, message);
         replyMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyMessage.enableHtml(true);
         return replyMessage;
     }
 
@@ -39,6 +40,14 @@ public class MessageUtil {
 
     public static SendMessage getMessage(String chatId, String message) {
         return getSomeMessage(chatId, message);
+    }
+
+    public static SendMessage getMessage(String chatId, String message, boolean isHtml) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(message);
+        sendMessage.enableHtml(isHtml);
+        return sendMessage;
     }
 
     public static AnswerCallbackQuery getAnswerCallbackQuery(String id, String text) {
