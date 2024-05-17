@@ -5,6 +5,7 @@ import com.kolyapetrov.telegram_bot.model.dto.CallBackInfo;
 import com.kolyapetrov.telegram_bot.model.dto.UserInfo;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
+import com.kolyapetrov.telegram_bot.model.service.OrdersInMessageService;
 import com.kolyapetrov.telegram_bot.util.enums.CallBackName;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
@@ -27,10 +28,11 @@ import static com.kolyapetrov.telegram_bot.util.ConstantMessages.*;
 @Component
 public class SeeOtherAdsCallBackQuery implements CallBackHandler {
     private final OrderService orderService;
+    private final OrdersInMessageService ordersInMessageService;
 
-    @Autowired
-    public SeeOtherAdsCallBackQuery(OrderService orderService) {
+    public SeeOtherAdsCallBackQuery(OrderService orderService, OrdersInMessageService ordersInMessageService) {
         this.orderService = orderService;
+        this.ordersInMessageService = ordersInMessageService;
     }
 
     @Override
@@ -38,14 +40,14 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
             throws TelegramApiException {
         String buttonCallBack = callBackInfo.getNameOfButton();
 
-        Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
+        /*Order order = orderService.getOrder(callBackInfo.getNumberOfOrder());
         if (order == null) {
             DeleteMessage deleteMessage = new DeleteMessage(userInfo.getChatId(), userInfo.getMessageId());
             sender.execute(deleteMessage);
             sender.execute(MessageUtil.getMessage(userInfo.getChatId(), "Этого объявления больше не существует!"));
             return;
         }
-
+*/
         switch (buttonCallBack) {
             case RIGHT_AD, LEFT_AD -> getNextOrderQuery(userInfo, callBackInfo, sender);
             case SEE_PHOTOS_AD -> getOrderPhotosQuery(userInfo, callBackInfo, sender);
@@ -69,30 +71,34 @@ public class SeeOtherAdsCallBackQuery implements CallBackHandler {
     }
 
     void getNextOrderQuery(UserInfo userInfo, CallBackInfo callBackInfo, DefaultAbsSender sender) throws TelegramApiException {
-        List<Order> orders = getUserOrders(callBackInfo.getCity(), userInfo.getAppUser().getUserId());
+        List<Order> orders = getUserOrders(callBackInfo.getMessageId(), userInfo.getAppUser().getUserId());
 
         int indexOfCurrentOrder = OrderUtil.getIndexOfOrder(orders, callBackInfo.getNumberOfOrder());
-        Order newCurrentOrder = orders.get(indexOfCurrentOrder);
-        String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
-
         int[] indexes = OrderUtil.getIndexesOfNeighboringOrders(indexOfCurrentOrder, orders.size());
-        Order leftNewOrder = orders.get(indexes[0]);
-        Order rightNewOrder = orders.get(indexes[1]);
 
-        InlineKeyboardMarkup keyboard = KeyBoardUtil.seeOtherADsKeyboard(leftNewOrder.getId(),
-                newCurrentOrder.getId(), rightNewOrder.getId(), callBackInfo.getCity());
+        Order newCurrentOrder = null;
+        if (callBackInfo.getNameOfButton().equals(RIGHT_AD)) {
+            newCurrentOrder = orders.get(indexes[1]);
+        } else if (callBackInfo.getNameOfButton().equals(LEFT_AD)) {
+            newCurrentOrder = orders.get(indexes[0]);
+        } else {
+            throw new RuntimeException("Incorrect name of button in SeeOtherAdsCallBackQuery!");
+        }
+
+        String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
+        Long messageId = callBackInfo.getMessageId();
+        InlineKeyboardMarkup keyboard = KeyBoardUtil.seeOtherADsKeyboard(newCurrentOrder.getId(), messageId);
 
         sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                 newMainPhotoId, newCurrentOrder.toString(), keyboard));
     }
 
-    private List<Order> getUserOrders(String city, Long userId) {
-        return orderService.findByCityAndUserIdNot(city, userId)
+    private List<Order> getUserOrders(Long messageId, Long userId) {
+        return ordersInMessageService.findOrdersByMessageIdAndUserId(messageId, userId)
                 .stream()
                 .sorted(Comparator.comparing(Order::getId))
                 .toList();
     }
-
 
     @Override
     public CallBackName getCallBack() {

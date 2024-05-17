@@ -137,17 +137,21 @@ public class BookingBot extends TelegramLongPollingBot {
 
     private CallBackInfo getCallBackInfo(String callBack) {
         String[] callBackParts = callBack.split(" ");
-        CallBackInfo callBackInfo =  CallBackInfo.builder().build();
+        CallBackInfo callBackInfo = CallBackInfo.builder().build();
 
         switch (callBackParts[0]) {
-            case OTHER_ADS, LOCAL_ADS, MY_ADS, ADMIN_ADS, BOOKING_REQUEST -> {
+            case OTHER_ADS, LOCAL_ADS-> {
+                callBackInfo.setMessageId(Long.parseLong(callBackParts[3]));
+                callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
+                callBackInfo.setNameOfButton(callBackParts[1]);
+
+            } case MY_ADS, ADMIN_ADS, BOOKING_REQUEST -> {
                 callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
                 callBackInfo.setNameOfButton(callBackParts[1]);
             }
         }
 
         switch (callBackParts[0]) {
-            case OTHER_ADS -> callBackInfo.setCity(callBackParts[3]);
             case BOOKING_PRIVATE -> callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[2]));
             case ACCEPT_BOOKING_PRIVATE -> callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[1]));
             case SELECT_DATE, ALREADY_SELECTED, ALREADY_BOOKED -> {
@@ -155,13 +159,16 @@ public class BookingBot extends TelegramLongPollingBot {
                 callBackInfo.setSelectedDate(callBackParts[1]);
             }
             case SEARCH_FILTER -> {
-                callBackInfo.setNameOfButton(callBackParts[1] + " " + callBackParts[2]);
-                callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[3]));
+                if (ENTER_CITY.startsWith(callBackParts[1]) || SEARCH.startsWith(callBackParts[1]) ||
+                        SEND_LOCATION.startsWith(callBackParts[1])) {
+                    callBackInfo.setNameOfButton(callBackParts[1] + " " + callBackParts[2]);
+                    callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[3]));
+                } else {
+                    callBackInfo.setNameOfButton(callBackParts[1] + " " + callBackParts[2] + " " + callBackParts[3]);
+                    callBackInfo.setNumberOfOrder(Long.parseLong(callBackParts[4]));
+                }
             }
-            case LOCAL_ADS -> {
-                callBackInfo.setLatitude(Double.parseDouble(callBackParts[3]));
-                callBackInfo.setLongitude(Double.parseDouble(callBackParts[4]));
-            }
+            case SELECT_DATE_FOR_FILTER -> callBackInfo.setSelectedDate(callBackParts[1]);
         }
         return callBackInfo;
     }

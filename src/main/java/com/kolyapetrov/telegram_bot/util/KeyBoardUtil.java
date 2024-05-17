@@ -32,7 +32,8 @@ public class KeyBoardUtil {
     }
 
     public static InlineKeyboardMarkup filterForAds(long idOfFilter) {
-        String[] buttonLabels = {ENTER_CITY, ENTER_LOWER_PRICE, ENTER_UPPER_PRICE, ENTER_LOWER_DATE, ENTER_UPPER_DATE, SEARCH};
+        String[] buttonLabels = {ENTER_CITY, ENTER_LOWER_PRICE, ENTER_UPPER_PRICE, ENTER_LOWER_DATE, ENTER_UPPER_DATE,
+                SEND_LOCATION, SEARCH};
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
 
         for (String label : buttonLabels) {
@@ -60,6 +61,7 @@ public class KeyBoardUtil {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setResizeKeyboard(true);
         keyboardMarkup.setOneTimeKeyboard(true);
+        keyboardMarkup.setIsPersistent(false);
         List<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow row1 = new KeyboardRow();
         KeyboardButton button1 = new KeyboardButton(SEND_LOCATION);
@@ -105,9 +107,9 @@ public class KeyBoardUtil {
     }
 
 
-    public static InlineKeyboardMarkup seeMyADsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder) {
-        InlineKeyboardButton leftOrderButton = getButton(MY_ADS, LEFT_AD, idOfLeftOrder);
-        InlineKeyboardButton rightOrderButton = getButton(MY_ADS, RIGHT_AD, idOfRightOrder);
+    public static InlineKeyboardMarkup seeMyADsKeyboard(Long idOfCurrentOrder) {
+        InlineKeyboardButton leftOrderButton = getButton(MY_ADS, LEFT_AD, idOfCurrentOrder);
+        InlineKeyboardButton rightOrderButton = getButton(MY_ADS, RIGHT_AD, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(leftOrderButton);
         keyboardButtonsRow1.add(rightOrderButton);
@@ -142,7 +144,7 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    public static InlineKeyboardMarkup seeMyADsKeyboard(Long idOfCurrentOrder) {
+    public static InlineKeyboardMarkup seeMyADsKeyboard2(Long idOfCurrentOrder) {
         InlineKeyboardButton editOrderButton = getButton(MY_ADS, EDIT_AD, idOfCurrentOrder);
         InlineKeyboardButton seePhotosOrderButton = getButton(MY_ADS, SEE_PHOTOS_AD, idOfCurrentOrder);
         InlineKeyboardButton deleteOrderButton = getButton(MY_ADS, DELETE_AD, idOfCurrentOrder);
@@ -157,16 +159,15 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    public static InlineKeyboardMarkup seeOtherADsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder,
-                                                           String city) {
-        InlineKeyboardButton leftOrderButton = getButton(OTHER_ADS, LEFT_AD, idOfLeftOrder, city);
-        InlineKeyboardButton rightOrderButton = getButton(OTHER_ADS, RIGHT_AD, idOfRightOrder, city);
+    public static InlineKeyboardMarkup seeOtherADsKeyboard(Long idOfCurrentOrder, Long idOfMessage) {
+        InlineKeyboardButton leftOrderButton = getButton(OTHER_ADS, LEFT_AD, idOfCurrentOrder, idOfMessage);
+        InlineKeyboardButton rightOrderButton = getButton(OTHER_ADS, RIGHT_AD, idOfCurrentOrder, idOfMessage);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(leftOrderButton);
         keyboardButtonsRow1.add(rightOrderButton);
 
-        InlineKeyboardButton seePhotosOrderButton = getButton(OTHER_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, city);
-        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
+        InlineKeyboardButton seePhotosOrderButton = getButton(OTHER_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, idOfMessage);
+        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder, idOfMessage);
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
         keyboardButtonsRow2.add(seePhotosOrderButton);
         keyboardButtonsRow2.add(bookAdButton);
@@ -178,9 +179,9 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    public static InlineKeyboardMarkup seeOtherADsKeyboard(Long idOfCurrentOrder, String city) {
-        InlineKeyboardButton seePhotosOrderButton = getButton(OTHER_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, city);
-        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
+    public static InlineKeyboardMarkup seeOtherADsKeyboard2(Long idOfCurrentOrder, Long idOfMessage) {
+        InlineKeyboardButton seePhotosOrderButton = getButton(OTHER_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, idOfMessage);
+        InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder, idOfMessage);
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         keyboardButtonsRow.add(seePhotosOrderButton);
         keyboardButtonsRow.add(bookAdButton);
@@ -191,15 +192,14 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfLeftOrder, Long idOfCurrentOrder, Long idOfRightOrder,
-                                                           Double latitude, Double longitude) {
-        InlineKeyboardButton leftOrderButton = getButton(LOCAL_ADS, LEFT_AD, idOfLeftOrder, latitude, longitude);
-        InlineKeyboardButton rightOrderButton = getButton(LOCAL_ADS, RIGHT_AD, idOfRightOrder, latitude, longitude);
+    public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfCurrentOrder, Long idOfMessage) {
+        InlineKeyboardButton leftOrderButton = getButton(LOCAL_ADS, LEFT_AD, idOfCurrentOrder, idOfMessage);
+        InlineKeyboardButton rightOrderButton = getButton(LOCAL_ADS, RIGHT_AD, idOfCurrentOrder, idOfMessage);
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         keyboardButtonsRow1.add(leftOrderButton);
         keyboardButtonsRow1.add(rightOrderButton);
 
-        InlineKeyboardButton seePhotosOrderButton = getButton(LOCAL_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, latitude, longitude);
+        InlineKeyboardButton seePhotosOrderButton = getButton(LOCAL_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, idOfMessage);
         InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
 
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
@@ -213,8 +213,8 @@ public class KeyBoardUtil {
         return new InlineKeyboardMarkup(rowList);
     }
 
-    public static InlineKeyboardMarkup seeLocalAdsKeyboard(Long idOfCurrentOrder) {
-        InlineKeyboardButton seePhotosOrderButton = getButton(LOCAL_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, 0.0, 0.0);
+    public static InlineKeyboardMarkup seeLocalAdsKeyboard2(Long idOfCurrentOrder, Long idOfMessage) {
+        InlineKeyboardButton seePhotosOrderButton = getButton(LOCAL_ADS, SEE_PHOTOS_AD, idOfCurrentOrder, idOfMessage);
         InlineKeyboardButton bookAdButton = getButton(BOOKING_PRIVATE, BOOKING, idOfCurrentOrder);
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
         keyboardButtonsRow.add(seePhotosOrderButton);
@@ -227,10 +227,10 @@ public class KeyBoardUtil {
     }
 
     private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long idOfCurrentOrder,
-                                                  String city) {
+                                                  Long messageId) {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(nameOfButton);
-        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder + " " + city);
+        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder + " " + messageId);
         return button;
     }
 
@@ -238,14 +238,6 @@ public class KeyBoardUtil {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(nameOfButton);
         button.setCallbackData(typeOfButton + " " + nameOfButton + " " + id);
-        return button;
-    }
-
-    private static InlineKeyboardButton getButton(String typeOfButton, String nameOfButton, Long idOfCurrentOrder,
-                                                  Double latitude, Double longitude) {
-        InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(nameOfButton);
-        button.setCallbackData(typeOfButton + " " + nameOfButton + " " + idOfCurrentOrder + " " + latitude + " " + longitude);
         return button;
     }
 
@@ -305,5 +297,46 @@ public class KeyBoardUtil {
         keyboard.add(inlineKeyboardButtons);
         markup.setKeyboard(keyboard);
         return markup;
+    }
+
+    public static InlineKeyboardMarkup getKeyBoardCalendarForSearching(LocalDate startDate, LocalDate endDate) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
+
+        for (int i = 0; i < 30; i++) {
+            LocalDate date = currentDate.plusDays(i);
+            String dateText = date.format(formatter);
+
+            int rowIdx = i / 3;
+            int colIdx = i % 3;
+
+            if (colIdx == 0) {
+                keyboard.add(new ArrayList<>());
+            }
+
+            InlineKeyboardButton button = new InlineKeyboardButton();
+            if (startDate != null && date.isEqual(startDate)) {
+                button.setText("\uD83D\uDCC5 " + dateText);
+            } else if (endDate != null && date.isEqual(endDate)) {
+                button.setText(dateText + " \uD83C\uDFC1");
+            } else {
+                button.setText(dateText);
+            }
+            button.setCallbackData(SELECT_DATE_FOR_FILTER + " " + date);
+
+            keyboard.get(rowIdx).add(button);
+        }
+
+        inlineKeyboardMarkup.setKeyboard(keyboard);
+
+        InlineKeyboardButton button = getButton(CANCEL_FILTER, CANCEL_ACTION, 0L);
+        keyboard.add(new ArrayList<>());
+        keyboard.get(keyboard.size() - 1).add(button);
+
+        return inlineKeyboardMarkup;
     }
 }

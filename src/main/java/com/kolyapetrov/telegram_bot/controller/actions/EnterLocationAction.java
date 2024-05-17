@@ -6,12 +6,12 @@ import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.model.entity.PhotoOfOrder;
 import com.kolyapetrov.telegram_bot.model.service.LocationService;
 import com.kolyapetrov.telegram_bot.model.service.OrderService;
+import com.kolyapetrov.telegram_bot.model.service.SearchAdsFilterService;
 import com.kolyapetrov.telegram_bot.model.service.UserService;
 import com.kolyapetrov.telegram_bot.util.KeyBoardUtil;
 import com.kolyapetrov.telegram_bot.util.MessageUtil;
 import com.kolyapetrov.telegram_bot.util.OrderUtil;
 import com.kolyapetrov.telegram_bot.util.enums.UserState;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.Location;
@@ -23,25 +23,25 @@ import java.util.List;
 
 import static com.kolyapetrov.telegram_bot.util.ConstantMessages.GO_BACK;
 import static com.kolyapetrov.telegram_bot.util.enums.UserState.MAIN;
-import static com.kolyapetrov.telegram_bot.util.enums.UserState.SEARCH_FOR_ADS;
 
 @Component
-public class EnterLocationForSeeingAdsAction implements ActionHandler {
+public class EnterLocationAction implements ActionHandler {
     private final UserService userService;
     private final LocationService locationService;
     private final OrderService orderService;
+    private final SearchAdsFilterService searchAdsFilterService;
 
-    @Autowired
-    public EnterLocationForSeeingAdsAction(UserService userService, OrderService orderService,
-                                           LocationService locationService) {
+    public EnterLocationAction(UserService userService, LocationService locationService, OrderService orderService,
+                               SearchAdsFilterService searchAdsFilterService) {
         this.userService = userService;
-        this.orderService = orderService;
         this.locationService = locationService;
+        this.orderService = orderService;
+        this.searchAdsFilterService = searchAdsFilterService;
     }
 
     @Override
     public UserState getState() {
-        return SEARCH_FOR_ADS;
+        return UserState.ENTER_LOCATION_CORDS;
     }
 
     @Override
@@ -56,17 +56,26 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
 
         } else if (update.getMessage().hasLocation()) {
             Location location = update.getMessage().getLocation();
+            Long recordId = searchAdsFilterService.findRecordIdByUserId(appUser.getUserId());
+            searchAdsFilterService.updateLatitude(recordId, location.getLatitude());
+            searchAdsFilterService.updateLongitude(recordId, location.getLongitude());
+
             System.out.println("My lat: " + location.getLatitude());
             System.out.println("My lon: " + location.getLongitude());
-            String city = locationService.requestInfoAboutLocationByCords(location.getLatitude(), location.getLongitude());
+            appUser.setUserState(UserState.MAIN);
+            userService.saveUser(appUser);
+            sender.execute(MessageUtil.getMessage(chatId, "Координаты текущего местоположения получены!",
+                    KeyBoardUtil.mainKeyBoard()));
+            /*String city = locationService.requestInfoAboutLocationByCords(location.getLatitude(), location.getLongitude());
             List<Order> orders = orderService.findByCityAndUserIdNot(city, appUser.getUserId());
 
             orders.sort(Comparator.comparingDouble(myOrder ->
                     locationService.distBetweenPoints(myOrder.getLatitude(), myOrder.getLongitude(), location.getLatitude(),
-                            location.getLongitude())));
+                            location.getLongitude())));*/
 
-            if (orders.isEmpty()) {
-                sender.execute(MessageUtil.getMessage(chatId, "Вокруг вас не найдено объявлений!"));
+            /*if (orders.isEmpty()) {
+                sender.execute(MessageUtil.getMessage(chatId, "Вокруг вас не найдено объявлений. Вы можете " +
+                        "воспользоваться поиском по городу!"));
 
             } else {
                 var order = orders.get(0);
@@ -88,34 +97,10 @@ public class EnterLocationForSeeingAdsAction implements ActionHandler {
                     sender.execute(MessageUtil.getMessage(chatId, order + distanceToPerson, mainPhotoId,
                             KeyBoardUtil.seeLocalAdsKeyboard(order.getId())));
                 }
-            }
+            }*/
 
-        } else if (update.getMessage().hasText()) {
-            String city = update.getMessage().getText();
-            String capitalizedCity = (Character.toUpperCase(city.charAt(0)) + city.substring(1));
-            List<Order> orders = orderService.findByCityAndUserIdNot(capitalizedCity, appUser.getUserId());
-
-            if (orders.isEmpty()) {
-                sender.execute(MessageUtil.getMessage(chatId, "В выбранном городе объявлений не найдено!"));
-            } else {
-                var firstOrder = orders.get(0);
-                List<PhotoOfOrder> photosOfOrder = firstOrder.getPhotos();
-                String mainPhotoId = photosOfOrder.get(0).getId();
-
-                if (orders.size() > 1) {
-                    Long leftOrderId = orders.get(orders.size() - 1).getId();
-                    Long currentOrderId = orders.get(0).getId();
-                    Long rightOrderId = orders.get(1).getId();
-                    sender.execute(MessageUtil.getMessage(chatId, firstOrder.toString(), mainPhotoId,
-                            KeyBoardUtil.seeOtherADsKeyboard(leftOrderId, currentOrderId, rightOrderId, capitalizedCity)));
-                } else {
-                    sender.execute(MessageUtil.getMessage(chatId, firstOrder.toString(), mainPhotoId,
-                            KeyBoardUtil.seeOtherADsKeyboard(orders.get(0).getId(), capitalizedCity)));
-                }
-            }
         } else {
-            sender.execute(MessageUtil.getMessage(chatId, "Введите название города текстом или " +
-                    "отправьте геопозицию!"));
+            sender.execute(MessageUtil.getMessage(chatId, "Для отправки геопозиции нажмите кнопку снизу!"));
         }
     }
 }

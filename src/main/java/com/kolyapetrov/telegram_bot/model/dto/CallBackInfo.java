@@ -10,7 +10,7 @@ import lombok.Setter;
 public class CallBackInfo {
     private String id;
     private Long numberOfOrder;
-    private String city;
+    private Long messageId;
     private Double longitude;
     private Double latitude;
     private String nameOfButton;

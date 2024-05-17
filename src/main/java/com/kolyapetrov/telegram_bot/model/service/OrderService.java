@@ -1,5 +1,6 @@
 package com.kolyapetrov.telegram_bot.model.service;
 
+import com.kolyapetrov.telegram_bot.model.entity.Filter;
 import com.kolyapetrov.telegram_bot.model.entity.Order;
 import com.kolyapetrov.telegram_bot.util.enums.OrderState;
 
@@ -16,4 +17,5 @@ public interface OrderService {
     Long findUserIdByOrderId(Long id);
     List<Order> findByState(OrderState state);
     void deleteOrderByOrderId(Long orderId);
+    List<Order> findOrdersByFilter(Filter filter);
 }

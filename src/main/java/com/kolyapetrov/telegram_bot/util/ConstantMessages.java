@@ -40,4 +40,5 @@ public class ConstantMessages {
     public static final String SEARCH_FILTER = "sf";
     public static final String CANCEL_FILTER = "cf";
     public static final String CANCEL_ACTION = "Отменить ввод фильтра ❌";
+    public static final String SELECT_DATE_FOR_FILTER = "sdff";
 }

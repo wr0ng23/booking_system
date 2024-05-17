@@ -42,6 +42,9 @@ Order {
     @Column(name = "city")
     private String city;
 
+    @Transient
+    private Double distance;
+
     @Column(name = "address")
     private String address;
 
@@ -64,6 +67,9 @@ Order {
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     List<MetroDistance> metroDistances;
+
+    @OneToMany(mappedBy = "order")
+    List<OrdersInMessage> orders;
 
     @Override
     public String toString() {

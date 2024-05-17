@@ -13,34 +13,40 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-public class EnterCityForFilterAction implements ActionHandler {
+public class EnterLowerPriceForFilter implements ActionHandler {
     private final UserService userService;
     private final SearchAdsFilterService searchAdsFilterService;
 
     @Autowired
-    public EnterCityForFilterAction(UserService userService, SearchAdsFilterService searchAdsFilterService) {
+    public EnterLowerPriceForFilter(UserService userService, SearchAdsFilterService searchAdsFilterService) {
         this.userService = userService;
         this.searchAdsFilterService = searchAdsFilterService;
     }
 
     @Override
     public UserState getState() {
-        return UserState.ENTER_CITY_FOR_FILTER;
+        return UserState.ENTER_LOWER_PRICE_FOR_FILTER;
     }
 
     @Override
     public void handle(Update update, DefaultAbsSender sender) throws TelegramApiException {
         String chatId = update.getMessage().getChatId().toString();
         if (update.getMessage().hasText()) {
-            AppUser appUser = userService.getUser(update.getMessage().getFrom());
-            String city = update.getMessage().getText();
+            try {
+                Long price = Long.valueOf(update.getMessage().getText());
 
-            Long recordId = searchAdsFilterService.findRecordIdByUserId(appUser.getUserId());
-            searchAdsFilterService.updateCity(recordId, city);
+                AppUser appUser = userService.getUser(update.getMessage().getFrom());
+                Long recordId = searchAdsFilterService.findRecordIdByUserId(appUser.getUserId());
+                searchAdsFilterService.updateLowerPrice(recordId, price);
 
-            appUser.setUserState(UserState.MAIN);
-            userService.saveUser(appUser);
-            sender.execute(MessageUtil.getMessage(chatId, "Для поиска выбран город: <i>" + city + "</i>", true));
+                appUser.setUserState(UserState.MAIN);
+                userService.saveUser(appUser);
+                sender.execute(MessageUtil.getMessage(chatId, "Для поиска выбрана нижняя цена: <i>" + price +
+                        " руб. </i> ", true));
+
+            } catch (NumberFormatException e) {
+                sender.execute(MessageUtil.getMessage(chatId, "Введите нижнюю цену для поиска числом!"));
+            }
 
         } else {
             sender.execute(MessageUtil.getMessage(chatId, "Сообщение должно состоять из текста!"));

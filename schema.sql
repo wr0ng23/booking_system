@@ -7,14 +7,14 @@ CREATE TABLE users
 
 CREATE TABLE orders
 (
-    id              serial primary key,
-    id_of_user      bigint,
-    description     varchar,
-    city            varchar,
-    address         varchar,
-    latitude        float8,
-    longitude       float8,
-    state           varchar,
+    id          serial primary key,
+    id_of_user  bigint,
+    description varchar,
+    city        varchar,
+    address     varchar,
+    latitude    float8,
+    longitude   float8,
+    state       varchar,
     foreign key (id_of_user) references users (id),
     unique (id_of_user, number_of_order)
 );
@@ -62,3 +62,15 @@ CREATE table metro_distance_order
 
 ALTER TABLE booking
     ADD CONSTRAINT unique_records UNIQUE (id_of_order, id_of_user, date_start, date_end);
+
+
+create table orders_in_message
+(
+    id            serial primary key,
+    id_of_message int,
+    id_of_order   int,
+    user_id       int,
+    unique (id_of_message, id_of_order, user_id),
+    foreign key (id_of_order) references orders (id),
+    foreign key (user_id) references users (id)
+);

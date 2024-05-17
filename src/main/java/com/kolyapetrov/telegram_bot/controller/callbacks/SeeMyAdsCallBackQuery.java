@@ -116,21 +116,26 @@ public class SeeMyAdsCallBackQuery implements CallBackHandler {
         List<Order> userOrders = getUserOrders(userInfo.getAppUser());
 
         int indexOfCurrentOrderInOrderList = OrderUtil.getIndexOfOrder(userOrders, callBackInfo.getNumberOfOrder());
-        Order newCurrentOrder = userOrders.get(indexOfCurrentOrderInOrderList);
-        String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
+        Order newCurrentOrder;
 
         if (userOrders.size() > 1) {
             int[] indexes = OrderUtil.getIndexesOfNeighboringOrders(indexOfCurrentOrderInOrderList, userOrders.size());
-            Order leftNewOrder = userOrders.get(indexes[0]);
-            Order rightNewOrder = userOrders.get(indexes[1]);
+            if (callBackInfo.getNameOfButton().equals(RIGHT_AD)) {
+                newCurrentOrder = userOrders.get(indexes[1]);
+            } else if (callBackInfo.getNameOfButton().equals(LEFT_AD)) {
+                newCurrentOrder = userOrders.get(indexes[0]);
+            } else {
+                throw  new RuntimeException("BEDA!");
+            }
 
-            InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard(leftNewOrder.getId(),
-                    newCurrentOrder.getId(), rightNewOrder.getId());
-
+            InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard(newCurrentOrder.getId());
+            String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                     newMainPhotoId, newCurrentOrder.toStringMyAd(), keyboard));
         } else {
-            InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard(newCurrentOrder.getId());
+            newCurrentOrder = userOrders.get(0);
+            String newMainPhotoId = newCurrentOrder.getPhotos().get(0).getId();
+            InlineKeyboardMarkup keyboard = KeyBoardUtil.seeMyADsKeyboard2(newCurrentOrder.getId());
             sender.execute(MessageUtil.getEditMessageForSeeAds(userInfo.getChatId(), userInfo.getMessageId(),
                     newMainPhotoId, newCurrentOrder.toStringMyAd(), keyboard));
         }

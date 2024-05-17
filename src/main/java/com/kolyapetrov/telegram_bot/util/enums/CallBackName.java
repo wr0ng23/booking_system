@@ -17,7 +17,8 @@ public enum CallBackName {
     ADMIN_ACTIONS(ConstantMessages.ADMIN_ADS),
     BOOKING_REQUEST(ConstantMessages.BOOKING_REQUEST),
     SEARCH_FILTER(ConstantMessages.SEARCH_FILTER),
-    CANCEL_FILTER(ConstantMessages.CANCEL_FILTER);
+    CANCEL_FILTER(ConstantMessages.CANCEL_FILTER),
+    SELECT_DATE_FOR_FILTER(ConstantMessages.SELECT_DATE_FOR_FILTER);
 
     private final String callBackName;
 
